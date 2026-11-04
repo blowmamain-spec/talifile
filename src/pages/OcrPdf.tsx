@@ -53,7 +53,10 @@ export default function OcrPdf() {
         setProgress(`Merender halaman ${i}/${pdfDoc.numPages}…`)
         const page = await pdfDoc.getPage(i)
         const canvas = await renderPageToCanvas(page, 2)
-        const { data } = await worker.recognize(canvas)
+        const pageBlob: Blob = await new Promise((resolve) =>
+          canvas.toBlob((b) => resolve(b!), 'image/png'),
+        )
+        const { data } = await worker.recognize(pageBlob)
         pageTexts.push(data.text.trim())
         setText(pageTexts.map((t, idx) => `--- Halaman ${idx + 1} ---\n${t}`).join('\n\n'))
       }

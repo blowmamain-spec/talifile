@@ -67,12 +67,6 @@ export const tools: Tool[] = [
     description: 'Isi field formulir PDF langsung di browser.',
   },
   {
-    id: 'ocr-pdf',
-    path: '/ocr-pdf',
-    title: 'OCR PDF',
-    description: 'Ubah PDF hasil scan jadi teks yang bisa dicari dan disalin.',
-  },
-  {
     id: 'sign-pdf',
     path: '/sign-pdf',
     title: 'Sign PDF',
