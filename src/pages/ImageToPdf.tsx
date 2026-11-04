@@ -3,6 +3,7 @@ import { PDFDocument } from 'pdf-lib'
 import { saveAs } from 'file-saver'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
+import { SortableList, DragHandle } from '../components/SortableList'
 import { formatBytes, toBlob } from '../lib/format'
 
 type ImgItem = { id: string; file: File; url: string }
@@ -111,45 +112,52 @@ export default function ImageToPdf() {
 
       {items.length > 0 && (
         <div className="mt-6">
-          <ul className="space-y-1.5">
-            {items.map((item, i) => (
-              <li key={item.id} className="flex items-center gap-3 rounded-xl bg-ink/[0.03] p-3">
-                <img src={item.url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{item.file.name}</p>
-                  <p className="text-xs tabular-nums text-ink/45">{formatBytes(item.file.size)}</p>
+          <SortableList
+            items={items}
+            onReorder={setItems}
+            className="space-y-1.5"
+            renderItem={(item, dragHandleProps) => {
+              const i = items.findIndex((it) => it.id === item.id)
+              return (
+                <div className="flex items-center gap-2 rounded-xl bg-ink/[0.03] p-3">
+                  <DragHandle {...dragHandleProps} />
+                  <img src={item.url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{item.file.name}</p>
+                    <p className="text-xs tabular-nums text-ink/45">{formatBytes(item.file.size)}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={i === 0}
+                      onClick={() => move(item.id, -1)}
+                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      aria-label="Pindah ke atas"
+                    >
+                      <ArrowIcon direction="up" />
+                    </button>
+                    <button
+                      type="button"
+                      disabled={i === items.length - 1}
+                      onClick={() => move(item.id, 1)}
+                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      aria-label="Pindah ke bawah"
+                    >
+                      <ArrowIcon direction="down" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => remove(item.id)}
+                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      aria-label="Hapus gambar"
+                    >
+                      <XIcon />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <button
-                    type="button"
-                    disabled={i === 0}
-                    onClick={() => move(item.id, -1)}
-                    className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
-                    aria-label="Pindah ke atas"
-                  >
-                    <ArrowIcon direction="up" />
-                  </button>
-                  <button
-                    type="button"
-                    disabled={i === items.length - 1}
-                    onClick={() => move(item.id, 1)}
-                    className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
-                    aria-label="Pindah ke bawah"
-                  >
-                    <ArrowIcon direction="down" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => remove(item.id)}
-                    className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
-                    aria-label="Hapus gambar"
-                  >
-                    <XIcon />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+              )
+            }}
+          />
 
           <fieldset className="mt-6 flex flex-wrap items-center gap-5">
             <legend className="sr-only">Ukuran halaman</legend>

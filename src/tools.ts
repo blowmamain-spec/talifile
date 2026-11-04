@@ -25,6 +25,30 @@ export const tools: Tool[] = [
     description: 'Gabungkan beberapa gambar jadi satu file PDF.',
   },
   {
+    id: 'pdf-to-image',
+    path: '/pdf-to-image',
+    title: 'PDF to Image',
+    description: 'Ekspor setiap halaman PDF jadi gambar JPG.',
+  },
+  {
+    id: 'merge-pdf',
+    path: '/merge-pdf',
+    title: 'Merge PDF',
+    description: 'Gabungkan beberapa file PDF jadi satu, urutan bisa diatur.',
+  },
+  {
+    id: 'organize-pdf',
+    path: '/organize-pdf',
+    title: 'Organize PDF',
+    description: 'Hapus, putar, atau atur ulang urutan halaman PDF.',
+  },
+  {
+    id: 'watermark-pdf',
+    path: '/watermark-pdf',
+    title: 'Watermark PDF',
+    description: 'Tambahkan teks watermark ke semua halaman PDF.',
+  },
+  {
     id: 'sign-pdf',
     path: '/sign-pdf',
     title: 'Sign PDF',

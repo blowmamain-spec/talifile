@@ -6,6 +6,7 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
 import { toBlob } from '../lib/format'
+import { friendlyPdfError } from '../lib/pdfErrors'
 
 type PageItem = { index: number; thumb: string; selected: boolean }
 
@@ -34,7 +35,7 @@ export default function SplitPdf() {
       setPages(items)
     } catch (err) {
       console.error(err)
-      setError('Gagal membuka PDF. Pastikan file tidak rusak atau terkunci password.')
+      setError(friendlyPdfError(err, 'Gagal membuka PDF. Pastikan file tidak rusak.'))
     } finally {
       setLoading(false)
     }
@@ -67,7 +68,7 @@ export default function SplitPdf() {
       )
     } catch (err) {
       console.error(err)
-      setError('Gagal memisahkan halaman.')
+      setError(friendlyPdfError(err, 'Gagal memisahkan halaman.'))
     } finally {
       setWorking(false)
     }
@@ -95,7 +96,7 @@ export default function SplitPdf() {
       saveAs(blob, `${baseName}-split.zip`)
     } catch (err) {
       console.error(err)
-      setError('Gagal memisahkan halaman.')
+      setError(friendlyPdfError(err, 'Gagal memisahkan halaman.'))
     } finally {
       setWorking(false)
     }

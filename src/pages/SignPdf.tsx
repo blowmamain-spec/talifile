@@ -6,6 +6,7 @@ import Dropzone from '../components/Dropzone'
 import SignaturePad from '../components/SignaturePad'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
 import { toBlob } from '../lib/format'
+import { friendlyPdfError } from '../lib/pdfErrors'
 
 type PagePreview = { width: number; height: number; dataUrl: string }
 type Placement = { leftPct: number; topPct: number; widthPct: number }
@@ -41,7 +42,7 @@ export default function SignPdf() {
       setPreviews(items)
     } catch (err) {
       console.error(err)
-      setError('Gagal membuka PDF. Pastikan file tidak rusak atau terkunci password.')
+      setError(friendlyPdfError(err, 'Gagal membuka PDF. Pastikan file tidak rusak.'))
     } finally {
       setLoading(false)
     }
@@ -110,7 +111,7 @@ export default function SignPdf() {
       )
     } catch (err) {
       console.error(err)
-      setError('Gagal menyimpan PDF yang ditandatangani.')
+      setError(friendlyPdfError(err, 'Gagal menyimpan PDF yang ditandatangani.'))
     } finally {
       setWorking(false)
     }

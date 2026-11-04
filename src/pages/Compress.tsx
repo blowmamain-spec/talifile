@@ -4,6 +4,7 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { formatBytes, toBlob } from '../lib/format'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
+import { friendlyPdfError } from '../lib/pdfErrors'
 
 type Kind = 'image' | 'pdf'
 type Result = { url: string; size: number; name: string }
@@ -81,7 +82,7 @@ export default function Compress() {
       })
     } catch (err) {
       console.error(err)
-      setError('Gagal mengompres file. Coba file lain.')
+      setError(friendlyPdfError(err, 'Gagal mengompres file. Coba file lain.'))
     } finally {
       setWorking(false)
       setProgress('')
