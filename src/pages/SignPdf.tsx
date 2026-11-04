@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { saveAs } from 'file-saver'
 import ToolShell from '../components/ToolShell'
@@ -9,7 +10,17 @@ import { toBlob } from '../lib/format'
 import { friendlyPdfError } from '../lib/pdfErrors'
 
 type PagePreview = { width: number; height: number; dataUrl: string }
-type Placement = { id: string; leftPct: number; topPct: number; widthPct: number; sig: string }
+type Placement = {
+  id: string
+  leftPct: number
+  topPct: number
+  widthPct: number
+  sig: string
+  aspect: number
+}
+type Drag = { id: string; mode: 'move' | 'resize'; startX: number; startY: number; start: Placement }
+
+const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
 
 export default function SignPdf() {
   const [file, setFile] = useState<File | null>(null)
@@ -21,7 +32,16 @@ export default function SignPdf() {
   const [loading, setLoading] = useState(false)
   const [working, setWorking] = useState(false)
   const [error, setError] = useState('')
+  const [sigAspect, setSigAspect] = useState(0.4)
   const stageRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<Drag | null>(null)
+
+  useEffect(() => {
+    if (!signature) return
+    const img = new Image()
+    img.onload = () => setSigAspect(img.naturalHeight / img.naturalWidth)
+    img.src = signature
+  }, [signature])
 
   async function handleFiles(files: File[]) {
     const f = files[0]
@@ -50,34 +70,81 @@ export default function SignPdf() {
     }
   }
 
+  // Height of a placement as a fraction of page height (page and preview share an aspect ratio).
+  function heightPct(p: { widthPct: number; aspect: number }) {
+    const preview = previews[pageIndex]
+    return p.widthPct * p.aspect * (preview.width / preview.height)
+  }
+
+  function fitWidth(p: Placement, widthPct: number) {
+    const maxByHeight = (1 - p.topPct) / heightPct({ widthPct: 1, aspect: p.aspect })
+    return clamp(widthPct, 0.05, Math.min(1 - p.leftPct, maxByHeight))
+  }
+
+  function updatePlacement(id: string, patch: Partial<Placement>) {
+    setPlacements((prev) => ({
+      ...prev,
+      [pageIndex]: (prev[pageIndex] ?? []).map((p) => (p.id === id ? { ...p, ...patch } : p)),
+    }))
+  }
+
   function placeAt(e: React.MouseEvent<HTMLDivElement>) {
     if (!signature) return
     const rect = stageRef.current!.getBoundingClientRect()
-    const leftPct = (e.clientX - rect.left) / rect.width
-    const topPct = (e.clientY - rect.top) / rect.height
-    const widthPct = 0.3
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    let widthPct = 0.3
+    const h = heightPct({ widthPct, aspect: sigAspect })
+    if (h > 0.4) widthPct *= 0.4 / h
+    const hp = heightPct({ widthPct, aspect: sigAspect })
     const id = `sig-${Date.now()}-${Math.random()}`
     const placement: Placement = {
       id,
-      leftPct: Math.min(Math.max(leftPct - widthPct / 2, 0), 1 - widthPct),
-      topPct: Math.min(Math.max(topPct - 0.05, 0), 0.95),
+      leftPct: clamp(x - widthPct / 2, 0, 1 - widthPct),
+      topPct: clamp(y - hp / 2, 0, 1 - hp),
       widthPct,
       sig: signature,
+      aspect: sigAspect,
     }
     setPlacements((prev) => ({ ...prev, [pageIndex]: [...(prev[pageIndex] ?? []), placement] }))
     setSelectedId(id)
   }
 
-  function selectPlacement(e: React.MouseEvent, id: string) {
-    e.stopPropagation()
-    setSelectedId(id)
+  function startDrag(p: Placement, mode: Drag['mode']) {
+    return (e: ReactPointerEvent<HTMLElement>) => {
+      e.stopPropagation()
+      e.preventDefault()
+      setSelectedId(p.id)
+      e.currentTarget.setPointerCapture(e.pointerId)
+      dragRef.current = { id: p.id, mode, startX: e.clientX, startY: e.clientY, start: p }
+    }
+  }
+
+  function onDrag(e: ReactPointerEvent<HTMLElement>) {
+    const drag = dragRef.current
+    if (!drag) return
+    const rect = stageRef.current!.getBoundingClientRect()
+    const dx = (e.clientX - drag.startX) / rect.width
+    const dy = (e.clientY - drag.startY) / rect.height
+    const s = drag.start
+    if (drag.mode === 'move') {
+      updatePlacement(drag.id, {
+        leftPct: clamp(s.leftPct + dx, 0, 1 - s.widthPct),
+        topPct: clamp(s.topPct + dy, 0, 1 - heightPct(s)),
+      })
+    } else {
+      updatePlacement(drag.id, { widthPct: fitWidth(s, s.widthPct + dx) })
+    }
+  }
+
+  function endDrag() {
+    dragRef.current = null
   }
 
   function updateWidth(id: string, widthPct: number) {
-    setPlacements((prev) => ({
-      ...prev,
-      [pageIndex]: (prev[pageIndex] ?? []).map((p) => (p.id === id ? { ...p, widthPct } : p)),
-    }))
+    const p = (placements[pageIndex] ?? []).find((x) => x.id === id)
+    if (!p) return
+    updatePlacement(id, { widthPct: fitWidth(p, widthPct) })
   }
 
   function removePlacement(id: string) {
@@ -206,12 +273,14 @@ export default function SignPdf() {
                 draggable={false}
               />
               {currentPlacements.map((p) => (
-                <img
+                <div
                   key={p.id}
-                  src={p.sig}
-                  alt=""
-                  onClick={(e) => selectPlacement(e, p.id)}
-                  className={`absolute cursor-pointer outline-2 outline-offset-2 ${
+                  onClick={(e) => e.stopPropagation()}
+                  onPointerDown={startDrag(p, 'move')}
+                  onPointerMove={onDrag}
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  className={`absolute cursor-move touch-none select-none outline-2 outline-offset-2 ${
                     p.id === selectedId ? 'outline-brand-500' : 'outline-transparent hover:outline-brand-500/40'
                   }`}
                   style={{
@@ -219,7 +288,19 @@ export default function SignPdf() {
                     top: `${p.topPct * 100}%`,
                     width: `${p.widthPct * 100}%`,
                   }}
-                />
+                >
+                  <img src={p.sig} alt="" draggable={false} className="pointer-events-none block w-full" />
+                  {p.id === selectedId && (
+                    <span
+                      onPointerDown={startDrag(p, 'resize')}
+                      onPointerMove={onDrag}
+                      onPointerUp={endDrag}
+                      onPointerCancel={endDrag}
+                      aria-hidden="true"
+                      className="absolute -bottom-2 -right-2 h-4 w-4 cursor-se-resize touch-none rounded-full bg-brand-500 ring-2 ring-white"
+                    />
+                  )}
+                </div>
               ))}
             </div>
             {!signature && (
@@ -227,8 +308,8 @@ export default function SignPdf() {
             )}
             {signature && (
               <p className="mt-2 text-sm text-ink/50">
-                Klik di halaman untuk menambah tanda tangan. Klik tanda tangan yang sudah ada buat
-                atur ukuran atau hapus.
+                Klik di halaman untuk menambah tanda tangan. Seret untuk memindahkan, tarik titik
+                hijau di pojok untuk mengubah ukuran.
               </p>
             )}
           </div>

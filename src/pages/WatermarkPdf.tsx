@@ -5,6 +5,9 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { toBlob } from '../lib/format'
 import { friendlyPdfError } from '../lib/pdfErrors'
+import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
+
+type Preview = { dataUrl: string; widthPt: number; heightPt: number }
 
 export default function WatermarkPdf() {
   const [file, setFile] = useState<File | null>(null)
@@ -14,12 +17,28 @@ export default function WatermarkPdf() {
   const [angle, setAngle] = useState(-45)
   const [working, setWorking] = useState(false)
   const [error, setError] = useState('')
+  const [preview, setPreview] = useState<Preview | null>(null)
 
-  function handleFiles(files: File[]) {
+  async function handleFiles(files: File[]) {
     const f = files[0]
     if (!f) return
     setFile(f)
     setError('')
+    setPreview(null)
+    try {
+      const pdfDoc = await loadPdfDocument(f)
+      const page = await pdfDoc.getPage(1)
+      const viewport = page.getViewport({ scale: 1 })
+      const canvas = await renderPageToCanvas(page, 1.5)
+      setPreview({
+        dataUrl: canvas.toDataURL('image/jpeg', 0.85),
+        widthPt: viewport.width,
+        heightPt: viewport.height,
+      })
+    } catch (err) {
+      console.error(err)
+      setError(friendlyPdfError(err, 'Gagal membuka PDF. Pastikan file tidak rusak.'))
+    }
   }
 
   async function apply() {
@@ -159,14 +178,33 @@ export default function WatermarkPdf() {
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-center overflow-hidden rounded-xl bg-ink/[0.03] py-10">
-            <span
-              className="select-none font-bold text-ink/40"
-              style={{ fontSize, transform: `rotate(${-angle}deg)` }}
+          <p className="mt-6 mb-2 text-sm font-medium text-ink/55">Pratinjau halaman 1</p>
+          {preview ? (
+            <div
+              className="relative mx-auto max-w-sm overflow-hidden rounded-xl bg-white ring-1 ring-ink/10"
+              style={{ containerType: 'inline-size' }}
             >
-              {text || 'CONTOH'}
-            </span>
-          </div>
+              <img src={preview.dataUrl} alt="Pratinjau halaman pertama" className="block w-full" />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1/2 top-1/2 select-none whitespace-nowrap font-bold leading-none"
+                style={{
+                  fontFamily: 'Helvetica, Arial, sans-serif',
+                  // Scale PDF points to the rendered preview width.
+                  fontSize: `${(fontSize / preview.widthPt) * 100}cqw`,
+                  color: 'rgb(102,102,102)',
+                  opacity,
+                  transform: `translate(-50%, -50%) rotate(${-angle}deg)`,
+                }}
+              >
+                {text || 'CONTOH'}
+              </span>
+            </div>
+          ) : (
+            <div className="flex h-40 items-center justify-center rounded-xl bg-ink/[0.03] text-sm text-ink/45">
+              Memuat pratinjau…
+            </div>
+          )}
 
           {error && (
             <p className="mt-4 text-sm text-red-600" role="alert">

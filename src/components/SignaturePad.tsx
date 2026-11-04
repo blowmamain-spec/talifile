@@ -47,6 +47,33 @@ export default function SignaturePad({
   )
 }
 
+// Crops to the drawn strokes so the placed signature box hugs the ink, not the empty pad.
+function trimToInk(canvas: HTMLCanvasElement, pad = 8): string {
+  const { width, height } = canvas
+  const data = canvas.getContext('2d')!.getImageData(0, 0, width, height).data
+  let minX = width, minY = height, maxX = -1, maxY = -1
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[(y * width + x) * 4 + 3] > 0) {
+        if (x < minX) minX = x
+        if (x > maxX) maxX = x
+        if (y < minY) minY = y
+        if (y > maxY) maxY = y
+      }
+    }
+  }
+  if (maxX < 0) return canvas.toDataURL('image/png')
+  minX = Math.max(0, minX - pad)
+  minY = Math.max(0, minY - pad)
+  maxX = Math.min(width - 1, maxX + pad)
+  maxY = Math.min(height - 1, maxY + pad)
+  const out = document.createElement('canvas')
+  out.width = maxX - minX + 1
+  out.height = maxY - minY + 1
+  out.getContext('2d')!.drawImage(canvas, minX, minY, out.width, out.height, 0, 0, out.width, out.height)
+  return out.toDataURL('image/png')
+}
+
 function DrawPad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawing = useRef(false)
@@ -56,18 +83,25 @@ function DrawPad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
   useEffect(() => {
     const canvas = canvasRef.current!
     const ctx = canvas.getContext('2d')!
-    ctx.lineWidth = 2.5
+    ctx.lineWidth = 4
     ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
     ctx.strokeStyle = '#111827'
   }, [])
 
+  // The canvas is CSS-scaled, so pointer coordinates must be mapped to its pixel grid.
   function getPos(e: ReactPointerEvent<HTMLCanvasElement>) {
-    const rect = e.currentTarget.getBoundingClientRect()
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top }
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    return {
+      x: ((e.clientX - rect.left) * canvas.width) / rect.width,
+      y: ((e.clientY - rect.top) * canvas.height) / rect.height,
+    }
   }
 
   function start(e: ReactPointerEvent<HTMLCanvasElement>) {
     drawing.current = true
+    e.currentTarget.setPointerCapture(e.pointerId)
     const ctx = canvasRef.current!.getContext('2d')!
     const { x, y } = getPos(e)
     ctx.beginPath()
@@ -88,7 +122,7 @@ function DrawPad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
     if (!drawing.current) return
     drawing.current = false
     if (hasInk.current) {
-      onChange(canvasRef.current!.toDataURL('image/png'))
+      onChange(trimToInk(canvasRef.current!))
     }
   }
 
@@ -110,8 +144,8 @@ function DrawPad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
         onPointerDown={start}
         onPointerMove={move}
         onPointerUp={end}
-        onPointerLeave={end}
-        className="w-full touch-none rounded-lg border border-dashed border-ink/20 bg-white"
+        onPointerCancel={end}
+        className="aspect-[480/180] w-full cursor-crosshair touch-none rounded-lg border border-dashed border-ink/20 bg-white"
       />
       <div className="mt-2 flex items-center justify-between">
         <p className="text-xs text-ink/50" aria-live="polite">
@@ -146,7 +180,7 @@ async function renderTypedSignature(text: string): Promise<string | null> {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText(text.trim(), canvas.width / 2, canvas.height / 2, canvas.width - 32)
-  return canvas.toDataURL('image/png')
+  return trimToInk(canvas)
 }
 
 function TypePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
