@@ -86,7 +86,7 @@ export default function WatermarkPdf() {
             <button
               type="button"
               onClick={() => setFile(null)}
-              className="shrink-0 rounded-full px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="shrink-0 rounded-full bg-ink/5 px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Ganti file
             </button>

@@ -78,7 +78,7 @@ export default function MergePdf() {
                 <button
                   type="button"
                   onClick={() => remove(item.id)}
-                  className="shrink-0 rounded-full p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                  className="shrink-0 rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                   aria-label="Hapus dari daftar"
                 >
                   <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-3.5 w-3.5">

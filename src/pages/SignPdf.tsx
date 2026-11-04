@@ -171,7 +171,7 @@ export default function SignPdf() {
                   setSelectedId(null)
                 }}
                 disabled={pageIndex === 0}
-                className="rounded-full px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="rounded-full bg-ink/5 px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 ← Sebelumnya
               </button>
@@ -186,7 +186,7 @@ export default function SignPdf() {
                   setSelectedId(null)
                 }}
                 disabled={pageIndex === previews.length - 1}
-                className="rounded-full px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink disabled:opacity-30 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="rounded-full bg-ink/5 px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Berikutnya →
               </button>
@@ -259,7 +259,7 @@ export default function SignPdf() {
                 <button
                   type="button"
                   onClick={() => removePlacement(selected.id)}
-                  className="mt-3 w-full rounded-full px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="mt-3 w-full rounded-full bg-ink/5 px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   Hapus tanda tangan ini
                 </button>

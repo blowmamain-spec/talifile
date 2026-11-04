@@ -1,21 +1,31 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
 
 type Status = 'idle' | 'loading' | 'done' | 'error'
+type Quality = 'isnet_quint8' | 'isnet_fp16' | 'isnet'
+
+const qualityOptions: { value: Quality; label: string; hint: string }[] = [
+  { value: 'isnet_quint8', label: 'Cepat', hint: 'Model paling kecil, download tercepat' },
+  { value: 'isnet_fp16', label: 'Seimbang', hint: 'Kualitas bagus, ukuran sedang' },
+  { value: 'isnet', label: 'Terbaik', hint: 'Hasil paling presisi, download lebih besar' },
+]
 
 export default function RemoveBackground() {
+  const [quality, setQuality] = useState<Quality>('isnet_fp16')
   const [original, setOriginal] = useState<{ url: string; file: File } | null>(null)
   const [resultUrl, setResultUrl] = useState<string | null>(null)
   const [resultSize, setResultSize] = useState(0)
   const [status, setStatus] = useState<Status>('idle')
   const [progressLabel, setProgressLabel] = useState('')
   const [error, setError] = useState('')
+  const cancelledRef = useRef(false)
 
   async function handleFiles(files: File[]) {
     const file = files[0]
     if (!file) return
+    cancelledRef.current = false
     setOriginal({ url: URL.createObjectURL(file), file })
     setResultUrl(null)
     setError('')
@@ -24,7 +34,11 @@ export default function RemoveBackground() {
     try {
       const { removeBackground } = await import('@imgly/background-removal')
       const blob = await removeBackground(file, {
+        device: 'gpu',
+        proxyToWorker: true,
+        model: quality,
         progress: (key, current, total) => {
+          if (cancelledRef.current) return
           setProgressLabel(
             key.startsWith('fetch')
               ? `Mengunduh model… ${Math.round((current / total) * 100)}%`
@@ -32,14 +46,21 @@ export default function RemoveBackground() {
           )
         },
       })
+      if (cancelledRef.current) return
       setResultUrl(URL.createObjectURL(blob))
       setResultSize(blob.size)
       setStatus('done')
     } catch (err) {
+      if (cancelledRef.current) return
       console.error(err)
       setError('Gagal menghapus background. Coba gambar lain atau refresh halaman.')
       setStatus('error')
     }
+  }
+
+  function cancel() {
+    cancelledRef.current = true
+    reset()
   }
 
   function reset() {
@@ -53,15 +74,43 @@ export default function RemoveBackground() {
     <ToolShell
       icon="remove-background"
       title="Remove Background"
-      description="Upload gambar, background dihapus otomatis langsung di browser. Model AI diunduh sekali saat pertama dipakai (~80 MB)."
+      description="Upload gambar, background dihapus otomatis langsung di browser. Model AI diunduh sekali saat pertama dipakai."
     >
       {!original && (
-        <Dropzone
-          accept="image/*"
-          onFiles={handleFiles}
-          label="Klik atau drop gambar di sini"
-          hint="JPG, PNG, atau WebP"
-        />
+        <div>
+          <fieldset className="mb-5 flex flex-wrap gap-2">
+            <legend className="mb-2 text-sm font-medium">Kualitas model</legend>
+            {qualityOptions.map((opt) => (
+              <label
+                key={opt.value}
+                className={`cursor-pointer rounded-xl px-4 py-2.5 text-sm transition-colors ${
+                  quality === opt.value
+                    ? 'bg-brand-500/10 text-brand-700 ring-1 ring-brand-500'
+                    : 'bg-ink/5 text-ink/65 hover:bg-ink/10'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="quality"
+                  value={opt.value}
+                  checked={quality === opt.value}
+                  onChange={() => setQuality(opt.value)}
+                  className="sr-only"
+                />
+                <span className="font-medium">{opt.label}</span>
+                <span className="mx-1.5 opacity-50">·</span>
+                <span>{opt.hint}</span>
+              </label>
+            ))}
+          </fieldset>
+
+          <Dropzone
+            accept="image/*"
+            onFiles={handleFiles}
+            label="Klik atau drop gambar di sini"
+            hint="JPG, PNG, atau WebP"
+          />
+        </div>
       )}
 
       {original && (
@@ -100,13 +149,24 @@ export default function RemoveBackground() {
                 Download PNG
               </a>
             )}
-            <button
-              type="button"
-              onClick={reset}
-              className="rounded-full px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-            >
-              Upload gambar lain
-            </button>
+            {status === 'loading' && (
+              <button
+                type="button"
+                onClick={cancel}
+                className="rounded-full bg-red-500/10 px-5 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-500/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500"
+              >
+                Batal
+              </button>
+            )}
+            {status !== 'loading' && (
+              <button
+                type="button"
+                onClick={reset}
+                className="rounded-full bg-ink/5 px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >
+                Ganti gambar
+              </button>
+            )}
           </div>
         </div>
       )}

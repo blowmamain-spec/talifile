@@ -149,7 +149,7 @@ export default function OrganizePdf() {
                     type="button"
                     onClick={() => rotate(p.id)}
                     aria-label="Putar 90 derajat"
-                    className="rounded-full p-1 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                    className="rounded-full bg-ink/5 p-1 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                   >
                     <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7.5A5 5 0 1 1 10.5 3" />

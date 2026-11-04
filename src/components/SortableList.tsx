@@ -93,7 +93,7 @@ export function DragHandle(props: DragHandleProps) {
     <button
       type="button"
       {...props}
-      className="cursor-grab touch-none rounded-full p-1.5 text-ink/35 transition-colors hover:bg-ink/10 hover:text-ink active:cursor-grabbing"
+      className="cursor-grab touch-none rounded-full bg-ink/5 p-1.5 text-ink/45 transition-colors hover:bg-ink/10 hover:text-ink active:cursor-grabbing"
       aria-label="Geser untuk mengubah urutan"
     >
       <svg aria-hidden="true" viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">

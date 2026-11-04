@@ -181,7 +181,7 @@ export default function CropResize() {
             <button
               type="button"
               onClick={resetCrop}
-              className="rounded-full px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+              className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
             >
               Reset crop
             </button>

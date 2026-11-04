@@ -135,7 +135,7 @@ export default function ImageToPdf() {
                       type="button"
                       disabled={i === 0}
                       onClick={() => move(item.id, -1)}
-                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Pindah ke atas"
                     >
                       <ArrowIcon direction="up" />
@@ -144,7 +144,7 @@ export default function ImageToPdf() {
                       type="button"
                       disabled={i === items.length - 1}
                       onClick={() => move(item.id, 1)}
-                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Pindah ke bawah"
                     >
                       <ArrowIcon direction="down" />
@@ -152,7 +152,7 @@ export default function ImageToPdf() {
                     <button
                       type="button"
                       onClick={() => remove(item.id)}
-                      className="rounded-full p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Hapus gambar"
                     >
                       <XIcon />

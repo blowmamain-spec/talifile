@@ -15,6 +15,9 @@ const WatermarkPdf = lazy(() => import('./pages/WatermarkPdf'))
 const SignPdf = lazy(() => import('./pages/SignPdf'))
 const SplitPdf = lazy(() => import('./pages/SplitPdf'))
 const CropResize = lazy(() => import('./pages/CropResize'))
+const ConvertImage = lazy(() => import('./pages/ConvertImage'))
+const FillPdfForm = lazy(() => import('./pages/FillPdfForm'))
+const OcrPdf = lazy(() => import('./pages/OcrPdf'))
 
 function RouteFallback() {
   return <p className="py-16 text-center text-sm text-ink/40">Memuat…</p>
@@ -30,6 +33,9 @@ createRoot(document.getElementById('root')!).render(
             <Route path="remove-background" element={<RemoveBackground />} />
             <Route path="compress" element={<Compress />} />
             <Route path="crop-resize" element={<CropResize />} />
+            <Route path="convert-image" element={<ConvertImage />} />
+            <Route path="fill-pdf-form" element={<FillPdfForm />} />
+            <Route path="ocr-pdf" element={<OcrPdf />} />
             <Route path="image-to-pdf" element={<ImageToPdf />} />
             <Route path="pdf-to-image" element={<PdfToImage />} />
             <Route path="merge-pdf" element={<MergePdf />} />

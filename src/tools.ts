@@ -25,6 +25,12 @@ export const tools: Tool[] = [
     description: 'Potong dan ubah ukuran gambar langsung di browser.',
   },
   {
+    id: 'convert-image',
+    path: '/convert-image',
+    title: 'Convert Format Gambar',
+    description: 'Ubah PNG, JPG, atau WebP ke format lain.',
+  },
+  {
     id: 'image-to-pdf',
     path: '/image-to-pdf',
     title: 'Image to PDF',
@@ -53,6 +59,18 @@ export const tools: Tool[] = [
     path: '/watermark-pdf',
     title: 'Watermark PDF',
     description: 'Tambahkan teks watermark ke semua halaman PDF.',
+  },
+  {
+    id: 'fill-pdf-form',
+    path: '/fill-pdf-form',
+    title: 'Isi Form PDF',
+    description: 'Isi field formulir PDF langsung di browser.',
+  },
+  {
+    id: 'ocr-pdf',
+    path: '/ocr-pdf',
+    title: 'OCR PDF',
+    description: 'Ubah PDF hasil scan jadi teks yang bisa dicari dan disalin.',
   },
   {
     id: 'sign-pdf',
