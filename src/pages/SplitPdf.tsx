@@ -168,7 +168,7 @@ export default function SplitPdf() {
               type="button"
               onClick={extractSelected}
               disabled={working || !pages.some((p) => p.selected)}
-              className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Download halaman terpilih (1 PDF)
             </button>

@@ -18,6 +18,9 @@ const CropResize = lazy(() => import('./pages/CropResize'))
 const ConvertImage = lazy(() => import('./pages/ConvertImage'))
 const FillPdfForm = lazy(() => import('./pages/FillPdfForm'))
 const OcrPdf = lazy(() => import('./pages/OcrPdf'))
+const PageNumbers = lazy(() => import('./pages/PageNumbers'))
+const ProtectPdf = lazy(() => import('./pages/ProtectPdf'))
+const Collage = lazy(() => import('./pages/Collage'))
 
 function RouteFallback() {
   return <p className="py-16 text-center text-sm text-ink/40">Memuat…</p>
@@ -43,6 +46,9 @@ createRoot(document.getElementById('root')!).render(
             <Route path="watermark-pdf" element={<WatermarkPdf />} />
             <Route path="sign-pdf" element={<SignPdf />} />
             <Route path="split-pdf" element={<SplitPdf />} />
+            <Route path="page-numbers" element={<PageNumbers />} />
+            <Route path="protect-pdf" element={<ProtectPdf />} />
+            <Route path="collage" element={<Collage />} />
           </Route>
         </Routes>
       </Suspense>

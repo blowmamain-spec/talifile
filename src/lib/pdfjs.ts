@@ -17,6 +17,7 @@ export async function renderPageToCanvas(page: PDFPageProxy, scale: number) {
   canvas.width = Math.ceil(viewport.width)
   canvas.height = Math.ceil(viewport.height)
   const ctx = canvas.getContext('2d')!
-  await page.render({ canvasContext: ctx, viewport, canvas }).promise
+  // 'print' intent skips requestAnimationFrame scheduling, which stalls forever in background tabs.
+  await page.render({ canvasContext: ctx, viewport, canvas, intent: 'print' }).promise
   return canvas
 }

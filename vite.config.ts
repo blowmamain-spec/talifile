@@ -12,10 +12,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'FileKit: Toolkit File & Gambar',
-        short_name: 'FileKit',
+        name: 'TaliFile: Toolkit File & Gambar',
+        short_name: 'TaliFile',
         description:
-          'Remove background, compress, convert, tanda tangan, dan split PDF, semua gratis dan langsung di browser.',
+          'Remove background, compress, kolase, tanda tangan, kunci, dan olah PDF. Gratis dan langsung di browser.',
         theme_color: '#faf9f6',
         background_color: '#faf9f6',
         display: 'standalone',

@@ -20,6 +20,8 @@
   --color-brand-500: #227a45;
   --color-brand-600: #1a6437;
   --color-brand-700: #154f2c;
+  /* Text on solid brand fills: white on the dark light-mode green, near-black on the bright dark-mode green. */
+  --color-on-brand: #ffffff;
 
   /* One ground, one ink: warm neutrals, not sterile black/white. */
   --color-ground: #faf9f6;
@@ -36,6 +38,8 @@
     --color-ink: #f3f1ea;
     --color-brand-500: #4ade80;
     --color-brand-600: #22c55e;
+    --color-brand-700: #86efac;
+    --color-on-brand: #052e14;
   }
 }
 
@@ -45,6 +49,8 @@
   --color-ink: #f3f1ea;
   --color-brand-500: #4ade80;
   --color-brand-600: #22c55e;
+  --color-brand-700: #86efac;
+  --color-on-brand: #052e14;
 }
 
 :root[data-theme='light'] {

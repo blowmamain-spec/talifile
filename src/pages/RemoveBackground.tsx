@@ -144,7 +144,7 @@ export default function RemoveBackground() {
               <a
                 href={resultUrl}
                 download={`${original.file.name.replace(/\.[^.]+$/, '')}-no-bg.png`}
-                className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download PNG
               </a>

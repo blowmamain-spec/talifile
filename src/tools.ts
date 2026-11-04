@@ -31,6 +31,12 @@ export const tools: Tool[] = [
     description: 'Ubah PNG, JPG, atau WebP ke format lain.',
   },
   {
+    id: 'collage',
+    path: '/collage',
+    title: 'Kolase Gambar',
+    description: 'Susun beberapa foto jadi satu gambar grid.',
+  },
+  {
     id: 'image-to-pdf',
     path: '/image-to-pdf',
     title: 'Image to PDF',
@@ -61,6 +67,12 @@ export const tools: Tool[] = [
     description: 'Tambahkan teks watermark ke semua halaman PDF.',
   },
   {
+    id: 'page-numbers',
+    path: '/page-numbers',
+    title: 'Nomor Halaman',
+    description: 'Tambahkan nomor halaman otomatis ke PDF.',
+  },
+  {
     id: 'fill-pdf-form',
     path: '/fill-pdf-form',
     title: 'Isi Form PDF',
@@ -77,5 +89,17 @@ export const tools: Tool[] = [
     path: '/split-pdf',
     title: 'Split PDF',
     description: 'Pisahkan halaman PDF atau ambil halaman tertentu.',
+  },
+  {
+    id: 'ocr-pdf',
+    path: '/ocr-pdf',
+    title: 'OCR PDF',
+    description: 'Ambil teks dari PDF hasil scan, bisa disalin.',
+  },
+  {
+    id: 'protect-pdf',
+    path: '/protect-pdf',
+    title: 'Kunci PDF',
+    description: 'Pasang password ke PDF, atau lepas password PDF milikmu.',
   },
 ]

@@ -89,6 +89,27 @@ const paths: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" d="M16.4 16.4 18 18" />
     </>
   ),
+  'page-numbers': (
+    <>
+      <rect x="3" y="2.5" width="14" height="15" rx="1.8" />
+      <path strokeLinecap="round" d="M6.5 6.5h7M6.5 9.5h7" opacity="0.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 13.2l1.2-.9v3.2" />
+    </>
+  ),
+  'protect-pdf': (
+    <>
+      <rect x="4" y="8.5" width="12" height="9" rx="1.8" />
+      <path strokeLinecap="round" d="M7 8.5V6a3 3 0 0 1 6 0v2.5" />
+      <path strokeLinecap="round" d="M10 12v2" />
+    </>
+  ),
+  collage: (
+    <>
+      <rect x="2.5" y="2.5" width="8" height="15" rx="1.4" />
+      <rect x="12" y="2.5" width="5.5" height="6.5" rx="1.2" />
+      <rect x="12" y="11" width="5.5" height="6.5" rx="1.2" />
+    </>
+  ),
   'split-pdf': (
     <>
       <rect x="2.5" y="3" width="6.5" height="14" rx="1.6" />

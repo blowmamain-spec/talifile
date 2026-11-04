@@ -254,7 +254,7 @@ export default function CropResize() {
             type="button"
             onClick={process}
             disabled={working || width < 1 || height < 1}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Memproses…' : 'Proses gambar'}
           </button>
@@ -266,7 +266,7 @@ export default function CropResize() {
               <a
                 href={result.url}
                 download={`${file.name.replace(/\.[^.]+$/, '')}-${width}x${height}.${format === 'image/png' ? 'png' : 'jpg'}`}
-                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download
               </a>

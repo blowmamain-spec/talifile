@@ -103,7 +103,7 @@ export default function MergePdf() {
             type="button"
             onClick={merge}
             disabled={working || items.length < 2}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Menggabungkan…' : `Gabungkan ${items.length} PDF`}
           </button>

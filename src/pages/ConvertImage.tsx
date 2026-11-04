@@ -132,7 +132,7 @@ export default function ConvertImage() {
             type="button"
             onClick={convert}
             disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Mengonversi…' : `Convert ke ${formats.find((f) => f.value === format)!.label}`}
           </button>
@@ -144,7 +144,7 @@ export default function ConvertImage() {
               <a
                 href={result.url}
                 download={`${file.name.replace(/\.[^.]+$/, '')}.${ext}`}
-                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download
               </a>

@@ -148,7 +148,7 @@ export default function PdfToImage() {
                 <span
                   aria-hidden="true"
                   className={`absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
-                    p.selected ? 'bg-brand-500 text-white' : 'bg-white/90 text-transparent ring-1 ring-ink/20'
+                    p.selected ? 'bg-brand-500 text-on-brand' : 'bg-white/90 text-transparent ring-1 ring-ink/20'
                   }`}
                 >
                   ✓
@@ -178,7 +178,7 @@ export default function PdfToImage() {
             type="button"
             onClick={exportImages}
             disabled={working || selected.length === 0}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working
               ? progress || 'Mengekspor…'

@@ -6,7 +6,7 @@ export default function Layout() {
     <div className="flex min-h-screen flex-col">
       <header className="mx-auto flex w-full max-w-4xl items-center justify-between px-5 py-6 sm:px-8">
         <Link to="/" className="text-lg font-semibold tracking-tight">
-          FileKit
+          TaliFile
         </Link>
         <div className="flex items-center gap-1">
           <NavLink

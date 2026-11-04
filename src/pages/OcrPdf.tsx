@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { Worker as TesseractWorker } from 'tesseract.js'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
@@ -20,6 +21,8 @@ export default function OcrPdf() {
   const [text, setText] = useState('')
   const [copied, setCopied] = useState(false)
   const [error, setError] = useState('')
+  const cancelledRef = useRef(false)
+  const workerRef = useRef<TesseractWorker | null>(null)
 
   function handleFiles(files: File[]) {
     const f = files[0]
@@ -35,40 +38,51 @@ export default function OcrPdf() {
     setWorking(true)
     setError('')
     setText('')
+    cancelledRef.current = false
+    let worker: TesseractWorker | null = null
     try {
+      setProgress('Menyiapkan OCR…')
       const Tesseract = await import('tesseract.js')
       const pdfDoc = await loadPdfDocument(file)
-      const worker = await Tesseract.createWorker(lang.split('+'), undefined, {
+      const total = pdfDoc.numPages
+      let current = 1
+      worker = await Tesseract.createWorker(lang.split('+'), undefined, {
         logger: (m) => {
           if (m.status === 'recognizing text') {
-            setProgress(`Membaca teks… ${Math.round(m.progress * 100)}%`)
-          } else {
-            setProgress(m.status)
+            setProgress(`Membaca halaman ${current}/${total}… ${Math.round(m.progress * 100)}%`)
           }
         },
       })
+      workerRef.current = worker
 
       const pageTexts: string[] = []
-      for (let i = 1; i <= pdfDoc.numPages; i++) {
-        setProgress(`Merender halaman ${i}/${pdfDoc.numPages}…`)
+      for (let i = 1; i <= total; i++) {
+        if (cancelledRef.current) break
+        current = i
+        setProgress(`Menyiapkan halaman ${i}/${total}…`)
         const page = await pdfDoc.getPage(i)
         const canvas = await renderPageToCanvas(page, 2)
-        const pageBlob: Blob = await new Promise((resolve) =>
-          canvas.toBlob((b) => resolve(b!), 'image/png'),
-        )
-        const { data } = await worker.recognize(pageBlob)
+        const { data } = await worker.recognize(canvas)
         pageTexts.push(data.text.trim())
         setText(pageTexts.map((t, idx) => `--- Halaman ${idx + 1} ---\n${t}`).join('\n\n'))
       }
-
-      await worker.terminate()
     } catch (err) {
-      console.error(err)
-      setError(friendlyPdfError(err, 'Gagal membaca teks dari PDF.'))
+      if (!cancelledRef.current) {
+        console.error(err)
+        setError(friendlyPdfError(err, 'Gagal membaca teks dari PDF.'))
+      }
     } finally {
+      await worker?.terminate().catch(() => {})
+      workerRef.current = null
       setWorking(false)
       setProgress('')
     }
+  }
+
+  function cancel() {
+    cancelledRef.current = true
+    // Terminating mid-recognize rejects the pending promise, which run() treats as a cancel.
+    workerRef.current?.terminate().catch(() => {})
   }
 
   async function copyText() {
@@ -150,14 +164,30 @@ export default function OcrPdf() {
             </p>
           )}
 
-          <button
-            type="button"
-            onClick={run}
-            disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-          >
-            {working ? progress || 'Memproses…' : 'Mulai OCR'}
-          </button>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={run}
+              disabled={working}
+              className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            >
+              {working ? progress || 'Memproses…' : 'Mulai OCR'}
+            </button>
+            {working && (
+              <button
+                type="button"
+                onClick={cancel}
+                className="rounded-full bg-ink/5 px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              >
+                Batal
+              </button>
+            )}
+          </div>
+          {!working && !text && (
+            <p className="mt-3 text-xs text-ink/50">
+              Pertama kali dipakai, data bahasa (beberapa MB) diunduh dulu. Setelah itu lebih cepat.
+            </p>
+          )}
 
           {text && (
             <div className="mt-6">
@@ -178,7 +208,7 @@ export default function OcrPdf() {
                 <button
                   type="button"
                   onClick={downloadText}
-                  className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   Download .txt
                 </button>

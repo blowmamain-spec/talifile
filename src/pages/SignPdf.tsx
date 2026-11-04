@@ -5,6 +5,7 @@ import { saveAs } from 'file-saver'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import SignaturePad from '../components/SignaturePad'
+import DateStamp from '../components/DateStamp'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
 import { toBlob } from '../lib/format'
 import { friendlyPdfError } from '../lib/pdfErrors'
@@ -32,16 +33,23 @@ export default function SignPdf() {
   const [loading, setLoading] = useState(false)
   const [working, setWorking] = useState(false)
   const [error, setError] = useState('')
-  const [sigAspect, setSigAspect] = useState(0.4)
+  const [aspectInfo, setAspectInfo] = useState<{ src: string; aspect: number } | null>(null)
+  const [stampKind, setStampKind] = useState<'signature' | 'date'>('signature')
+  const [dateStamp, setDateStamp] = useState<string | null>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<Drag | null>(null)
 
+  // Whatever is placed on the next click: the signature or the date stamp.
+  const activeStamp = stampKind === 'date' ? dateStamp : signature
+  // The aspect is measured asynchronously; only place once it belongs to the current stamp.
+  const sigAspect = activeStamp && aspectInfo?.src === activeStamp ? aspectInfo.aspect : null
+
   useEffect(() => {
-    if (!signature) return
+    if (!activeStamp) return
     const img = new Image()
-    img.onload = () => setSigAspect(img.naturalHeight / img.naturalWidth)
-    img.src = signature
-  }, [signature])
+    img.onload = () => setAspectInfo({ src: activeStamp, aspect: img.naturalHeight / img.naturalWidth })
+    img.src = activeStamp
+  }, [activeStamp])
 
   async function handleFiles(files: File[]) {
     const f = files[0]
@@ -89,11 +97,11 @@ export default function SignPdf() {
   }
 
   function placeAt(e: React.MouseEvent<HTMLDivElement>) {
-    if (!signature) return
+    if (!activeStamp || sigAspect === null) return
     const rect = stageRef.current!.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width
     const y = (e.clientY - rect.top) / rect.height
-    let widthPct = 0.3
+    let widthPct = stampKind === 'date' ? 0.25 : 0.3
     const h = heightPct({ widthPct, aspect: sigAspect })
     if (h > 0.4) widthPct *= 0.4 / h
     const hp = heightPct({ widthPct, aspect: sigAspect })
@@ -103,7 +111,7 @@ export default function SignPdf() {
       leftPct: clamp(x - widthPct / 2, 0, 1 - widthPct),
       topPct: clamp(y - hp / 2, 0, 1 - hp),
       widthPct,
-      sig: signature,
+      sig: activeStamp,
       aspect: sigAspect,
     }
     setPlacements((prev) => ({ ...prev, [pageIndex]: [...(prev[pageIndex] ?? []), placement] }))
@@ -210,7 +218,7 @@ export default function SignPdf() {
     <ToolShell
       icon="sign-pdf"
       title="Sign PDF"
-      description="Gambar, ketik, atau upload tanda tangan, lalu klik di halaman untuk menempatkannya. Bisa lebih dari satu per halaman."
+      description="Gambar, ketik, atau upload tanda tangan, lalu klik di halaman untuk menempatkannya. Bisa tambah tanggal juga, dan lebih dari satu per halaman."
     >
       {!file && (
         <Dropzone
@@ -244,7 +252,7 @@ export default function SignPdf() {
               </button>
               <p className="text-sm tabular-nums text-ink/50" aria-live="polite">
                 Halaman {pageIndex + 1} / {previews.length}
-                {currentPlacements.length > 0 && ` · ${currentPlacements.length} tanda tangan`}
+                {currentPlacements.length > 0 && ` · ${currentPlacements.length} ditempel`}
               </p>
               <button
                 type="button"
@@ -263,7 +271,7 @@ export default function SignPdf() {
               ref={stageRef}
               onClick={placeAt}
               className={`relative overflow-hidden rounded-xl ring-1 ring-ink/10 ${
-                signature ? 'cursor-crosshair' : ''
+                activeStamp ? 'cursor-crosshair' : ''
               }`}
             >
               <img
@@ -303,21 +311,53 @@ export default function SignPdf() {
                 </div>
               ))}
             </div>
-            {!signature && (
-              <p className="mt-2 text-sm text-ink/50">Siapkan tanda tangan dulu di panel kanan.</p>
-            )}
-            {signature && (
+            {!activeStamp && (
               <p className="mt-2 text-sm text-ink/50">
-                Klik di halaman untuk menambah tanda tangan. Seret untuk memindahkan, tarik titik
-                hijau di pojok untuk mengubah ukuran.
+                {stampKind === 'date'
+                  ? 'Pilih tanggal dulu di panel kanan.'
+                  : 'Siapkan tanda tangan dulu di panel kanan.'}
+              </p>
+            )}
+            {activeStamp && (
+              <p className="mt-2 text-sm text-ink/50">
+                Klik di halaman untuk menempel {stampKind === 'date' ? 'tanggal' : 'tanda tangan'}.
+                Seret untuk memindahkan, tarik titik hijau di pojok untuk mengubah ukuran.
               </p>
             )}
           </div>
 
           <div className="space-y-4">
             <div className="rounded-xl bg-ink/[0.03] p-4">
-              <p className="mb-2 text-sm font-medium">Tanda tangan</p>
-              <SignaturePad onChange={setSignature} />
+              <p className="mb-2 text-sm font-medium">Yang mau ditempel</p>
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                {(
+                  [
+                    ['signature', 'Tanda tangan'],
+                    ['date', 'Tanggal'],
+                  ] as const
+                ).map(([kind, label]) => (
+                  <button
+                    key={kind}
+                    type="button"
+                    onClick={() => setStampKind(kind)}
+                    aria-pressed={stampKind === kind}
+                    className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                      stampKind === kind
+                        ? 'bg-brand-500 text-on-brand'
+                        : 'bg-ground text-ink/65 ring-1 ring-ink/10 hover:text-ink'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {/* Both stay mounted so switching tabs keeps a drawn signature. */}
+              <div className={stampKind === 'signature' ? '' : 'hidden'}>
+                <SignaturePad onChange={setSignature} />
+              </div>
+              <div className={stampKind === 'date' ? '' : 'hidden'}>
+                <DateStamp onChange={setDateStamp} />
+              </div>
             </div>
 
             {selected && (
@@ -342,7 +382,7 @@ export default function SignPdf() {
                   onClick={() => removePlacement(selected.id)}
                   className="mt-3 w-full rounded-full bg-ink/5 px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
-                  Hapus tanda tangan ini
+                  Hapus yang dipilih
                 </button>
               </div>
             )}
@@ -351,11 +391,11 @@ export default function SignPdf() {
               type="button"
               onClick={downloadSigned}
               disabled={working || totalCount === 0}
-              className="w-full rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="w-full rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               {working
                 ? 'Menyimpan…'
-                : `Download PDF (${totalCount} tanda tangan, ${signedPageCount} halaman)`}
+                : `Download PDF (${totalCount} item, ${signedPageCount} halaman)`}
             </button>
           </div>
         </div>
