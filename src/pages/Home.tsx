@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { tools } from '../tools'
 import ToolIcon from '../components/ToolIcon'
 
-const stats = ['9 tools', '100% di browser', 'Gratis, tanpa akun']
-
 export default function Home() {
+  const stats = [`${tools.length} tools`, '100% di browser', 'Gratis, tanpa akun']
+
   return (
     <div>
       <div className="max-w-xl pt-6 pb-4 sm:pt-10">

@@ -12,6 +12,12 @@ const paths: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" d="M7 7 3.5 3.5M13 7l3.5-3.5M7 13l-3.5 3.5M13 13l3.5 3.5" />
     </>
   ),
+  'crop-resize': (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 2v11a1 1 0 0 0 1 1h11" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14 18V7a1 1 0 0 0-1-1H2" />
+    </>
+  ),
   'image-to-pdf': (
     <>
       <rect x="2.5" y="4" width="8.5" height="8.5" rx="1.6" />

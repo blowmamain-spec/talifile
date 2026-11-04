@@ -19,6 +19,12 @@ export const tools: Tool[] = [
     description: 'Perkecil ukuran gambar atau PDF tanpa ribet.',
   },
   {
+    id: 'crop-resize',
+    path: '/crop-resize',
+    title: 'Crop & Resize',
+    description: 'Potong dan ubah ukuran gambar langsung di browser.',
+  },
+  {
     id: 'image-to-pdf',
     path: '/image-to-pdf',
     title: 'Image to PDF',
