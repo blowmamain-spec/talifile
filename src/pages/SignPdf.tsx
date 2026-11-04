@@ -123,8 +123,9 @@ export default function SignPdf() {
 
   return (
     <ToolShell
+      icon="sign-pdf"
       title="Sign PDF"
-      description="Gambar tanda tangan, lalu klik di halaman untuk menempatkannya."
+      description="Gambar, ketik, atau upload tanda tangan, lalu klik di halaman untuk menempatkannya."
     >
       {!file && (
         <Dropzone

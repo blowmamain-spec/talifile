@@ -66,7 +66,11 @@ export default function WatermarkPdf() {
   }
 
   return (
-    <ToolShell title="Watermark PDF" description="Tambahkan teks watermark ke semua halaman PDF.">
+    <ToolShell
+      icon="watermark-pdf"
+      title="Watermark PDF"
+      description="Tambahkan teks watermark ke semua halaman PDF."
+    >
       {!file && (
         <Dropzone
           accept="application/pdf"

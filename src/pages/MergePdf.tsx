@@ -46,7 +46,11 @@ export default function MergePdf() {
   }
 
   return (
-    <ToolShell title="Merge PDF" description="Gabungkan beberapa file PDF jadi satu, urutan bisa diatur.">
+    <ToolShell
+      icon="merge-pdf"
+      title="Merge PDF"
+      description="Gabungkan beberapa file PDF jadi satu, urutan bisa diatur."
+    >
       <Dropzone
         accept="application/pdf"
         multiple

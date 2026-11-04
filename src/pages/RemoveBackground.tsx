@@ -51,6 +51,7 @@ export default function RemoveBackground() {
 
   return (
     <ToolShell
+      icon="remove-background"
       title="Remove Background"
       description="Upload gambar, background dihapus otomatis langsung di browser. Model AI diunduh sekali saat pertama dipakai (~80 MB)."
     >

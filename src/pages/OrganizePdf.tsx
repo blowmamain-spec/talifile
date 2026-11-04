@@ -88,6 +88,7 @@ export default function OrganizePdf() {
 
   return (
     <ToolShell
+      icon="organize-pdf"
       title="Organize PDF"
       description="Hapus, putar, atau seret untuk mengatur ulang urutan halaman."
     >
@@ -109,7 +110,7 @@ export default function OrganizePdf() {
       {file && pages.length > 0 && (
         <div>
           <p className="mb-4 text-sm tabular-nums text-ink/50">
-            {pages.length} halaman — seret buat ubah urutan
+            {pages.length} halaman · seret buat ubah urutan
           </p>
 
           <SortableList

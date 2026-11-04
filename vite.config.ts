@@ -12,10 +12,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'FileKit — Toolkit File & Gambar',
+        name: 'FileKit: Toolkit File & Gambar',
         short_name: 'FileKit',
         description:
-          'Remove background, compress, convert, tanda tangan, dan split PDF — semua gratis, langsung di browser.',
+          'Remove background, compress, convert, tanda tangan, dan split PDF, semua gratis dan langsung di browser.',
         theme_color: '#faf9f6',
         background_color: '#faf9f6',
         display: 'standalone',
@@ -27,12 +27,11 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         runtimeCaching: [
           {
-            urlPattern: ({ url }) =>
-              url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'unpkg.com',
+            urlPattern: ({ url }) => url.hostname === 'staticimgly.com',
             handler: 'CacheFirst',
             options: {
               cacheName: 'bg-removal-model',

@@ -101,7 +101,11 @@ export default function ImageToPdf() {
   }
 
   return (
-    <ToolShell title="Image to PDF" description="Gabungkan beberapa gambar menjadi satu file PDF.">
+    <ToolShell
+      icon="image-to-pdf"
+      title="Image to PDF"
+      description="Gabungkan beberapa gambar menjadi satu file PDF."
+    >
       <Dropzone
         accept="image/png,image/jpeg,image/webp"
         multiple

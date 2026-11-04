@@ -104,6 +104,7 @@ export default function SplitPdf() {
 
   return (
     <ToolShell
+      icon="split-pdf"
       title="Split PDF"
       description="Pisahkan setiap halaman jadi file sendiri, atau ambil halaman tertentu saja."
     >

@@ -80,7 +80,7 @@ export default function PdfToImage() {
   }
 
   return (
-    <ToolShell title="PDF to Image" description="Ekspor setiap halaman PDF jadi gambar JPG.">
+    <ToolShell icon="pdf-to-image" title="PDF to Image" description="Ekspor setiap halaman PDF jadi gambar JPG.">
       {!file && (
         <Dropzone
           accept="application/pdf"

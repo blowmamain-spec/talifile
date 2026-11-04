@@ -90,7 +90,7 @@ export default function Compress() {
   }
 
   return (
-    <ToolShell title="Compress File" description="Perkecil ukuran gambar atau PDF langsung di browser.">
+    <ToolShell icon="compress" title="Compress File" description="Perkecil ukuran gambar atau PDF langsung di browser.">
       {!file && (
         <Dropzone
           accept="image/*,application/pdf"

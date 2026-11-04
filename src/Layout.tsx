@@ -29,7 +29,7 @@ export default function Layout() {
       </main>
 
       <footer className="mx-auto w-full max-w-4xl px-5 pb-10 text-sm text-ink/45 sm:px-8">
-        Semua proses jalan di browser kamu sendiri — file tidak pernah diupload ke server.
+        Semua proses jalan di browser kamu sendiri. File tidak pernah diupload ke server.
       </footer>
     </div>
   )
