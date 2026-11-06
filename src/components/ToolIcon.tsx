@@ -110,6 +110,100 @@ const paths: Record<string, React.ReactNode> = {
       <rect x="12" y="11" width="5.5" height="6.5" rx="1.2" />
     </>
   ),
+  'pas-foto': (
+    <>
+      <rect x="4" y="2.5" width="12" height="15" rx="1.6" />
+      <circle cx="10" cy="8" r="2.4" />
+      <path strokeLinecap="round" d="M6.2 15c.8-2.2 2.2-3.3 3.8-3.3s3 1.1 3.8 3.3" />
+    </>
+  ),
+  'resize-banyak': (
+    <>
+      <rect x="5.5" y="5.5" width="11" height="11" rx="1.6" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.5 13V4.8a1.3 1.3 0 0 1 1.3-1.3H13" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 13l4-4M10.5 9H13v2.5" />
+    </>
+  ),
+  'putar-gambar': (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 9.5a5.5 5.5 0 1 1 1.6 4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.2 5.5v4h4" />
+    </>
+  ),
+  'sensor-gambar': (
+    <>
+      <rect x="2.5" y="4" width="15" height="12" rx="1.8" />
+      <rect x="5" y="8" width="7" height="3" rx="0.6" fill="currentColor" stroke="none" />
+      <path strokeLinecap="round" d="M5 13.3h4" opacity="0.5" />
+    </>
+  ),
+  'watermark-gambar': (
+    <>
+      <rect x="2.5" y="4" width="15" height="12" rx="1.8" />
+      <path strokeLinecap="round" d="M6 13l8-6" />
+      <path strokeLinecap="round" d="M5.5 7.5h2.5" opacity="0.5" />
+    </>
+  ),
+  'hapus-metadata': (
+    <>
+      <path strokeLinejoin="round" d="M10 17.5s5-4.3 5-8.6A5 5 0 0 0 5 8.9c0 4.3 5 8.6 5 8.6Z" />
+      <path strokeLinecap="round" d="M8 7l4 4m0-4-4 4" />
+    </>
+  ),
+  'tambah-teks-pdf': (
+    <>
+      <rect x="3" y="2.5" width="14" height="15" rx="1.8" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6.5 6.5h7M10 6.5v7" />
+    </>
+  ),
+  'sensor-pdf': (
+    <>
+      <rect x="3" y="2.5" width="14" height="15" rx="1.8" />
+      <path strokeLinecap="round" d="M6 6.5h8" opacity="0.5" />
+      <rect x="6" y="9" width="8" height="2.6" rx="0.5" fill="currentColor" stroke="none" />
+      <path strokeLinecap="round" d="M6 14h5" opacity="0.5" />
+    </>
+  ),
+  'pdf-ke-teks': (
+    <>
+      <rect x="3" y="2.5" width="14" height="15" rx="1.8" />
+      <path strokeLinecap="round" d="M6 6.5h8M6 9.5h8M6 12.5h5" />
+    </>
+  ),
+  'ukuran-halaman': (
+    <>
+      <rect x="3" y="5" width="9" height="12.5" rx="1.4" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8 2.5h7.5a1 1 0 0 1 1 1V12" strokeDasharray="1.6 1.8" />
+    </>
+  ),
+  'n-up': (
+    <>
+      <rect x="2.5" y="3" width="15" height="14" rx="1.6" />
+      <path d="M10 3v14" />
+      <path strokeLinecap="round" d="M4.8 6.5h3M12.2 6.5h3M4.8 9h3M12.2 9h3" opacity="0.5" />
+    </>
+  ),
+  'crop-pdf': (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5.5 2v11.5a1 1 0 0 0 1 1H18" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M2 5.5h11.5a1 1 0 0 1 1 1V18" />
+    </>
+  ),
+  'info-pdf': (
+    <>
+      <rect x="3" y="2.5" width="14" height="15" rx="1.8" />
+      <circle cx="10" cy="6.6" r="0.9" fill="currentColor" stroke="none" />
+      <path strokeLinecap="round" d="M10 9.5v4.5" />
+    </>
+  ),
+  'qr-code': (
+    <>
+      <rect x="3" y="3" width="5.5" height="5.5" rx="1" />
+      <rect x="11.5" y="3" width="5.5" height="5.5" rx="1" />
+      <rect x="3" y="11.5" width="5.5" height="5.5" rx="1" />
+      <path strokeLinecap="round" d="M11.5 11.5h2v2M17 11.5v0M15.5 15.5H17V17M11.5 17h1.5" />
+    </>
+  ),
   'split-pdf': (
     <>
       <rect x="2.5" y="3" width="6.5" height="14" rx="1.6" />

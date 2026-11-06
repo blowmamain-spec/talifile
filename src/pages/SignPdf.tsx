@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { PDFDocument } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import SignaturePad from '../components/SignaturePad'
 import DateStamp from '../components/DateStamp'
+import { PageNav } from '../lib/pdfPreview'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
 import { toBlob } from '../lib/format'
 import { friendlyPdfError } from '../lib/pdfErrors'
@@ -228,9 +229,9 @@ export default function SignPdf() {
         />
       )}
 
-      {loading && <p className="mt-4 text-sm text-ink/55">Membuka PDF…</p>}
+      {loading && <p className="mt-4 text-sm text-muted">Membuka PDF…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -238,34 +239,15 @@ export default function SignPdf() {
       {file && currentPreview && (
         <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
           <div>
-            <div className="mb-3 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => {
-                  setPageIndex((i) => Math.max(0, i - 1))
-                  setSelectedId(null)
-                }}
-                disabled={pageIndex === 0}
-                className="rounded-full bg-ink/5 px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                ← Sebelumnya
-              </button>
-              <p className="text-sm tabular-nums text-ink/50" aria-live="polite">
-                Halaman {pageIndex + 1} / {previews.length}
-                {currentPlacements.length > 0 && ` · ${currentPlacements.length} ditempel`}
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setPageIndex((i) => Math.min(previews.length - 1, i + 1))
-                  setSelectedId(null)
-                }}
-                disabled={pageIndex === previews.length - 1}
-                className="rounded-full bg-ink/5 px-3 py-1 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-30 disabled:hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                Berikutnya →
-              </button>
-            </div>
+            <PageNav
+              index={pageIndex}
+              count={previews.length}
+              onChange={(i) => {
+                setPageIndex(i)
+                setSelectedId(null)
+              }}
+              extra={currentPlacements.length > 0 ? `${currentPlacements.length} ditempel` : undefined}
+            />
 
             <div
               ref={stageRef}
@@ -312,14 +294,14 @@ export default function SignPdf() {
               ))}
             </div>
             {!activeStamp && (
-              <p className="mt-2 text-sm text-ink/50">
+              <p className="mt-2 text-sm text-muted">
                 {stampKind === 'date'
                   ? 'Pilih tanggal dulu di panel kanan.'
                   : 'Siapkan tanda tangan dulu di panel kanan.'}
               </p>
             )}
             {activeStamp && (
-              <p className="mt-2 text-sm text-ink/50">
+              <p className="mt-2 text-sm text-muted">
                 Klik di halaman untuk menempel {stampKind === 'date' ? 'tanggal' : 'tanda tangan'}.
                 Seret untuk memindahkan, tarik titik hijau di pojok untuk mengubah ukuran.
               </p>
@@ -327,7 +309,7 @@ export default function SignPdf() {
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-xl bg-ink/[0.03] p-4">
+            <div className="rounded-xl bg-surface ring-1 ring-ink/10 p-4">
               <p className="mb-2 text-sm font-medium">Yang mau ditempel</p>
               <div className="mb-4 grid grid-cols-2 gap-2">
                 {(
@@ -361,10 +343,10 @@ export default function SignPdf() {
             </div>
 
             {selected && (
-              <div className="rounded-xl bg-ink/[0.03] p-4">
+              <div className="rounded-xl bg-surface ring-1 ring-ink/10 p-4">
                 <label className="flex items-center justify-between text-sm">
                   <span>Ukuran</span>
-                  <span className="tabular-nums text-ink/50">
+                  <span className="tabular-nums text-muted">
                     {Math.round(selected.widthPct * 100)}%
                   </span>
                 </label>
@@ -380,7 +362,7 @@ export default function SignPdf() {
                 <button
                   type="button"
                   onClick={() => removePlacement(selected.id)}
-                  className="mt-3 w-full rounded-full bg-ink/5 px-3 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="mt-3 min-h-11 w-full rounded-full bg-surface px-3 text-sm font-medium text-danger ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   Hapus yang dipilih
                 </button>
@@ -391,7 +373,7 @@ export default function SignPdf() {
               type="button"
               onClick={downloadSigned}
               disabled={working || totalCount === 0}
-              className="w-full rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="w-full inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               {working
                 ? 'Menyimpan…'

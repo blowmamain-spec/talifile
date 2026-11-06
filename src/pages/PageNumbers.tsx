@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { toBlob } from '../lib/format'
@@ -128,7 +128,7 @@ export default function PageNumbers() {
 
       {file && (
         <div>
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-ink/[0.03] px-4 py-3.5">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-3.5">
             <p className="truncate font-medium">{file.name}</p>
             <button
               type="button"
@@ -136,7 +136,7 @@ export default function PageNumbers() {
                 setFile(null)
                 setPreview(null)
               }}
-              className="shrink-0 rounded-full bg-ink/5 px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="shrink-0 inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Ganti file
             </button>
@@ -146,7 +146,7 @@ export default function PageNumbers() {
             <div className="space-y-5">
               <fieldset>
                 <legend className="mb-2 text-sm font-medium">Posisi</legend>
-                <div className="grid max-w-xs grid-cols-3 gap-1.5 rounded-xl bg-ink/[0.03] p-1.5">
+                <div className="grid max-w-xs grid-cols-3 gap-1.5 rounded-xl bg-surface ring-1 ring-ink/10 p-1.5">
                   {(['top', 'bottom'] as VPos[]).flatMap((v) =>
                     (['left', 'center', 'right'] as HPos[]).map((h) => {
                       const active = vpos === v && hpos === h
@@ -155,7 +155,7 @@ export default function PageNumbers() {
                         <label
                           key={`${v}-${h}`}
                           className={`flex h-9 cursor-pointer items-center justify-center rounded-lg text-xs transition-colors focus-within:outline-2 focus-within:outline-brand-500 ${
-                            active ? 'bg-brand-500 text-on-brand' : 'bg-ground text-ink/55 hover:text-ink'
+                            active ? 'bg-brand-500 text-on-brand' : 'bg-ground text-muted hover:text-ink'
                           }`}
                         >
                           <input
@@ -198,7 +198,7 @@ export default function PageNumbers() {
               <div>
                 <label className="flex items-center justify-between text-sm">
                   <span>Ukuran teks</span>
-                  <span className="tabular-nums text-ink/50">{fontSize}pt</span>
+                  <span className="tabular-nums text-muted">{fontSize}pt</span>
                 </label>
                 <input
                   type="range"
@@ -219,7 +219,7 @@ export default function PageNumbers() {
                     max={9999}
                     value={startAt}
                     onChange={(e) => setStartAt(Math.max(1, Number(e.target.value) || 1))}
-                    className="w-20 rounded-lg bg-ink/[0.04] px-3 py-1.5 text-sm tabular-nums outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                    className="w-20 rounded-lg bg-surface px-3 py-1.5 text-sm tabular-nums outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
                   />
                 </label>
                 <label className="flex cursor-pointer items-center gap-2 text-sm">
@@ -235,7 +235,7 @@ export default function PageNumbers() {
             </div>
 
             <div>
-              <p className="mb-2 text-sm font-medium text-ink/55">Pratinjau halaman 1</p>
+              <p className="mb-2 text-sm font-medium text-muted">Pratinjau halaman 1</p>
               {preview ? (
                 <div
                   className="relative overflow-hidden rounded-xl bg-white ring-1 ring-ink/10"
@@ -266,18 +266,18 @@ export default function PageNumbers() {
                   )}
                 </div>
               ) : (
-                <div className="flex h-40 items-center justify-center rounded-xl bg-ink/[0.03] text-sm text-ink/45">
+                <div className="flex h-40 items-center justify-center rounded-xl bg-surface ring-1 ring-ink/10 text-sm text-muted">
                   Memuat pratinjau…
                 </div>
               )}
               {preview && skipFirst && (
-                <p className="mt-2 text-xs text-ink/50">Halaman 1 dilewati, nomor dimulai di halaman 2.</p>
+                <p className="mt-2 text-xs text-muted">Halaman 1 dilewati, nomor dimulai di halaman 2.</p>
               )}
             </div>
           </div>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600" role="alert">
+            <p className="mt-4 text-sm text-danger" role="alert">
               {error}
             </p>
           )}
@@ -286,7 +286,7 @@ export default function PageNumbers() {
             type="button"
             onClick={apply}
             disabled={working || !preview}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Memproses…' : 'Tambahkan Nomor Halaman'}
           </button>

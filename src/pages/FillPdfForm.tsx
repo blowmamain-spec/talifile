@@ -7,7 +7,7 @@ import {
   PDFDropdown,
   PDFOptionList,
 } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { toBlob } from '../lib/format'
@@ -129,15 +129,15 @@ export default function FillPdfForm() {
         />
       )}
 
-      {loading && <p className="mt-4 text-sm text-ink/55">Membuka PDF…</p>}
+      {loading && <p className="mt-4 text-sm text-muted">Membuka PDF…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
 
       {file && !loading && fields.length === 0 && !error && (
-        <p className="mt-4 text-sm text-ink/50">
+        <p className="mt-4 text-sm text-muted">
           PDF ini tidak punya field formulir yang bisa diisi.
         </p>
       )}
@@ -154,7 +154,7 @@ export default function FillPdfForm() {
                     onChange={(e) => setValue(f.name, e.target.value)}
                     rows={f.multiline ? 4 : 1}
                     autoComplete="off"
-                    className="w-full resize-none rounded-lg bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                    className="w-full resize-none rounded-lg bg-surface px-3 py-2 text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
                   />
                 )}
                 {f.kind === 'checkbox' && (
@@ -195,7 +195,7 @@ export default function FillPdfForm() {
                   <select
                     value={(values[f.name] as string) ?? ''}
                     onChange={(e) => setValue(f.name, e.target.value)}
-                    className="w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                    className="w-full rounded-lg bg-surface px-3 py-2 text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
                   >
                     <option value="">Pilih…</option>
                     {f.options?.map((opt) => (
@@ -215,7 +215,7 @@ export default function FillPdfForm() {
                         Array.from(e.target.selectedOptions, (o) => o.value),
                       )
                     }
-                    className="w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                    className="w-full rounded-lg bg-surface px-3 py-2 text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
                   >
                     {f.options?.map((opt) => (
                       <option key={opt} value={opt}>
@@ -232,7 +232,7 @@ export default function FillPdfForm() {
             type="button"
             onClick={save}
             disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Menyimpan…' : 'Simpan PDF'}
           </button>

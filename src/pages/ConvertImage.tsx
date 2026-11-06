@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ToolShell from '../components/ToolShell'
+import { offerFromUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
 
@@ -17,13 +18,30 @@ export default function ConvertImage() {
   const [quality, setQuality] = useState(0.9)
   const [working, setWorking] = useState(false)
   const [result, setResult] = useState<{ url: string; size: number } | null>(null)
+  const [heicStatus, setHeicStatus] = useState('')
 
-  function handleFiles(files: File[]) {
-    const f = files[0]
+  async function handleFiles(files: File[]) {
+    let f = files[0]
     if (!f) return
-    setFile(f)
     setResult(null)
-    setFormat(f.type === 'image/png' ? 'image/webp' : 'image/png')
+    setHeicStatus('')
+    // iPhone photos: browsers outside Safari cannot decode HEIC, so it is decoded here first (lazy-loaded, CSP-safe build).
+    const isHeic = /image\/hei[cf]/.test(f.type) || /\.hei[cf]$/i.test(f.name)
+    if (isHeic) {
+      setHeicStatus('Membaca foto HEIC…')
+      try {
+        const { heicTo } = await import('heic-to/csp')
+        const png = await heicTo({ blob: f, type: 'image/png' })
+        f = new File([png], f.name.replace(/\.hei[cf]$/i, '.png'), { type: 'image/png' })
+        setHeicStatus('')
+      } catch (err) {
+        console.error(err)
+        setHeicStatus('Foto HEIC ini tidak bisa dibaca. Coba ekspor ulang dari Galeri sebagai JPG.')
+        return
+      }
+    }
+    setFile(f)
+    setFormat(isHeic ? 'image/jpeg' : f.type === 'image/png' ? 'image/webp' : 'image/png')
   }
 
   async function convert() {
@@ -56,23 +74,29 @@ export default function ConvertImage() {
     <ToolShell
       icon="convert-image"
       title="Convert Format Gambar"
-      description="Ubah PNG, JPG, atau WebP ke format lain langsung di browser."
+      description="Ubah PNG, JPG, WebP, atau foto HEIC dari iPhone ke format lain langsung di browser."
     >
       {!file && (
         <Dropzone
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/png,image/jpeg,image/webp,image/heic,image/heif,.heic,.heif"
           onFiles={handleFiles}
           label="Klik atau drop gambar di sini"
-          hint="JPG, PNG, atau WebP"
+          hint="JPG, PNG, WebP, atau HEIC dari iPhone"
         />
+      )}
+
+      {heicStatus && (
+        <p className="mt-4 text-sm text-muted" role="status">
+          {heicStatus}
+        </p>
       )}
 
       {file && (
         <div>
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-ink/[0.03] px-4 py-3.5">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-3.5">
             <div className="min-w-0">
               <p className="truncate font-medium">{file.name}</p>
-              <p className="text-sm tabular-nums text-ink/50">{formatBytes(file.size)}</p>
+              <p className="text-sm tabular-nums text-muted">{formatBytes(file.size)}</p>
             </div>
             <button
               type="button"
@@ -80,7 +104,7 @@ export default function ConvertImage() {
                 setFile(null)
                 setResult(null)
               }}
-              className="shrink-0 rounded-full bg-ink/5 px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="shrink-0 inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Ganti gambar
             </button>
@@ -114,7 +138,7 @@ export default function ConvertImage() {
             <div className="mt-5">
               <label className="flex items-center justify-between text-sm">
                 <span>Kualitas</span>
-                <span className="tabular-nums text-ink/50">{Math.round(quality * 100)}%</span>
+                <span className="tabular-nums text-muted">{Math.round(quality * 100)}%</span>
               </label>
               <input
                 type="range"
@@ -132,19 +156,20 @@ export default function ConvertImage() {
             type="button"
             onClick={convert}
             disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Mengonversi…' : `Convert ke ${formats.find((f) => f.value === format)!.label}`}
           </button>
 
           {result && (
-            <div className="mt-6 rounded-xl bg-ink/[0.03] p-4" aria-live="polite">
+            <div className="mt-6 rounded-xl bg-surface ring-1 ring-ink/10 p-4" aria-live="polite">
               <img src={result.url} alt="Hasil konversi" className="max-h-72 rounded-lg" />
-              <p className="mt-3 text-sm tabular-nums text-ink/60">{formatBytes(result.size)}</p>
+              <p className="mt-3 text-sm tabular-nums text-muted">{formatBytes(result.size)}</p>
               <a
                 href={result.url}
                 download={`${file.name.replace(/\.[^.]+$/, '')}.${ext}`}
-                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                onClick={() => offerFromUrl(result.url, `${file.name.replace(/\.[^.]+$/, '')}.${ext}`)}
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download
               </a>

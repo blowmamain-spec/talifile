@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import JSZip from 'jszip'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
@@ -116,9 +116,9 @@ export default function SplitPdf() {
         />
       )}
 
-      {loading && <p className="mt-4 text-sm text-ink/55">Membuka PDF…</p>}
+      {loading && <p className="mt-4 text-sm text-muted">Membuka PDF…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -126,7 +126,7 @@ export default function SplitPdf() {
       {file && pages.length > 0 && (
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm tabular-nums text-ink/50">{pages.length} halaman</p>
+            <p className="text-sm tabular-nums text-muted">{pages.length} halaman</p>
             <div className="flex gap-4 text-sm">
               <button
                 type="button"
@@ -168,7 +168,7 @@ export default function SplitPdf() {
               type="button"
               onClick={extractSelected}
               disabled={working || !pages.some((p) => p.selected)}
-              className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Download halaman terpilih (1 PDF)
             </button>
@@ -176,7 +176,7 @@ export default function SplitPdf() {
               type="button"
               onClick={splitEveryPage}
               disabled={working}
-              className="rounded-full bg-ink/5 px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="inline-flex min-h-11 items-center rounded-full bg-surface px-5 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Pisah semua halaman (.zip)
             </button>

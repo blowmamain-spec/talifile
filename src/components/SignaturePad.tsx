@@ -33,7 +33,7 @@ export default function SignaturePad({
             onClick={() => switchMode(m)}
             aria-pressed={mode === m}
             className={`flex-1 rounded-full px-3 py-1.5 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500 ${
-              mode === m ? 'bg-ground text-ink' : 'text-ink/55 hover:text-ink'
+              mode === m ? 'bg-ground text-ink' : 'text-muted hover:text-ink'
             }`}
           >
             {modeLabels[m]}
@@ -122,13 +122,13 @@ function DrawPad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
         className="aspect-[480/180] w-full cursor-crosshair touch-none rounded-lg border border-dashed border-ink/20 bg-white"
       />
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-ink/50" aria-live="polite">
+        <p className="text-xs text-muted" aria-live="polite">
           {empty ? 'Gambar tanda tangan di atas' : 'Tanda tangan siap dipakai'}
         </p>
         <button
           type="button"
           onClick={clear}
-          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-muted transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
         >
           Hapus
         </button>
@@ -180,7 +180,7 @@ function TypePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
         autoComplete="off"
         spellCheck={false}
         placeholder="Nama kamu"
-        className="w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+        className="w-full rounded-lg bg-surface px-3 py-2 text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
       />
       <div className="mt-2 flex h-[100px] items-center justify-center overflow-hidden rounded-lg border border-dashed border-ink/20 bg-white">
         <span className="select-none px-4 text-4xl text-ink/90" style={{ fontFamily: "'Caveat', cursive" }}>
@@ -188,13 +188,13 @@ function TypePad({ onChange }: { onChange: (dataUrl: string | null) => void }) {
         </span>
       </div>
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-ink/50" aria-live="polite">
+        <p className="text-xs text-muted" aria-live="polite">
           {text.trim() ? 'Tanda tangan siap dipakai' : 'Ketik nama di atas'}
         </p>
         <button
           type="button"
           onClick={() => setText('')}
-          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-muted transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
         >
           Hapus
         </button>
@@ -235,7 +235,7 @@ function UploadPad({ onChange }: { onChange: (dataUrl: string | null) => void })
         {preview ? (
           <img src={preview} alt="" className="max-h-full max-w-full object-contain" />
         ) : (
-          <span className="px-4 text-center text-sm text-ink/50">
+          <span className="px-4 text-center text-sm text-muted">
             Klik untuk pilih file PNG tanda tangan
           </span>
         )}
@@ -249,13 +249,13 @@ function UploadPad({ onChange }: { onChange: (dataUrl: string | null) => void })
         />
       </button>
       <div className="mt-2 flex items-center justify-between">
-        <p className="text-xs text-ink/50" aria-live="polite">
+        <p className="text-xs text-muted" aria-live="polite">
           {preview ? 'Tanda tangan siap dipakai' : 'Idealnya PNG transparan'}
         </p>
         <button
           type="button"
           onClick={clear}
-          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+          className="rounded-full bg-ink/5 px-3 py-1 text-xs text-muted transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
         >
           Hapus
         </button>

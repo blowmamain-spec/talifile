@@ -22,7 +22,7 @@ export default function ThemeToggle() {
       onClick={cycle}
       aria-label={`Tema: ${labels[theme]}. Klik untuk ganti.`}
       title={labels[theme]}
-      className="rounded-full bg-ink/5 p-2 text-ink/55 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+      className="flex h-11 w-11 items-center justify-center rounded-full text-muted transition-colors hover:bg-ink/5 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
     >
       {theme === 'light' && <SunIcon />}
       {theme === 'dark' && <MoonIcon />}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { SortableList, DragHandle } from '../components/SortableList'
@@ -123,19 +123,19 @@ export default function ImageToPdf() {
             renderItem={(item, dragHandleProps) => {
               const i = items.findIndex((it) => it.id === item.id)
               return (
-                <div className="flex items-center gap-2 rounded-xl bg-ink/[0.03] p-3">
+                <div className="flex items-center gap-2 rounded-xl bg-surface ring-1 ring-ink/10 p-3">
                   <DragHandle {...dragHandleProps} />
                   <img src={item.url} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{item.file.name}</p>
-                    <p className="text-xs tabular-nums text-ink/45">{formatBytes(item.file.size)}</p>
+                    <p className="text-xs tabular-nums text-muted">{formatBytes(item.file.size)}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
                     <button
                       type="button"
                       disabled={i === 0}
                       onClick={() => move(item.id, -1)}
-                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-muted transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Pindah ke atas"
                     >
                       <ArrowIcon direction="up" />
@@ -144,7 +144,7 @@ export default function ImageToPdf() {
                       type="button"
                       disabled={i === items.length - 1}
                       onClick={() => move(item.id, 1)}
-                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-muted transition-colors hover:bg-ink/10 hover:text-ink disabled:opacity-25 disabled:hover:bg-transparent focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Pindah ke bawah"
                     >
                       <ArrowIcon direction="down" />
@@ -152,7 +152,7 @@ export default function ImageToPdf() {
                     <button
                       type="button"
                       onClick={() => remove(item.id)}
-                      className="rounded-full bg-ink/5 p-1.5 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ink/5 p-1.5 text-muted transition-colors hover:bg-red-500/10 hover:text-danger focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                       aria-label="Hapus gambar"
                     >
                       <XIcon />
@@ -188,7 +188,7 @@ export default function ImageToPdf() {
           </fieldset>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600" role="alert">
+            <p className="mt-4 text-sm text-danger" role="alert">
               {error}
             </p>
           )}
@@ -197,7 +197,7 @@ export default function ImageToPdf() {
             type="button"
             onClick={generate}
             disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Membuat PDF…' : `Buat PDF (${items.length} gambar)`}
           </button>

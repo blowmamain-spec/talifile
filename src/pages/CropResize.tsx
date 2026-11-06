@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import ToolShell from '../components/ToolShell'
+import { offerFromUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
 
@@ -175,13 +176,13 @@ export default function CropResize() {
           </div>
 
           <div className="mt-3 flex items-center justify-between">
-            <p className="text-xs tabular-nums text-ink/50">
+            <p className="text-xs tabular-nums text-muted">
               {img.naturalWidth}×{img.naturalHeight}px asli
             </p>
             <button
               type="button"
               onClick={resetCrop}
-              className="rounded-full bg-ink/5 px-3 py-1 text-xs text-ink/60 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+              className="rounded-full bg-ink/5 px-3 py-1 text-xs text-muted transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
             >
               Reset crop
             </button>
@@ -198,7 +199,7 @@ export default function CropResize() {
                 min={1}
                 value={width}
                 onChange={(e) => updateWidth(Number(e.target.value))}
-                className="mt-1.5 w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm tabular-nums outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                className="mt-1.5 w-full rounded-lg bg-surface px-3 py-2 text-sm tabular-nums outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
               />
             </div>
             <div>
@@ -211,7 +212,7 @@ export default function CropResize() {
                 min={1}
                 value={height}
                 onChange={(e) => updateHeight(Number(e.target.value))}
-                className="mt-1.5 w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm tabular-nums outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                className="mt-1.5 w-full rounded-lg bg-surface px-3 py-2 text-sm tabular-nums outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
               />
             </div>
           </div>
@@ -254,19 +255,20 @@ export default function CropResize() {
             type="button"
             onClick={process}
             disabled={working || width < 1 || height < 1}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Memproses…' : 'Proses gambar'}
           </button>
 
           {result && (
-            <div className="mt-6 rounded-xl bg-ink/[0.03] p-4" aria-live="polite">
+            <div className="mt-6 rounded-xl bg-surface ring-1 ring-ink/10 p-4" aria-live="polite">
               <img src={result.url} alt="Hasil crop dan resize" className="max-h-72 rounded-lg" />
-              <p className="mt-3 text-sm tabular-nums text-ink/60">{formatBytes(result.size)}</p>
+              <p className="mt-3 text-sm tabular-nums text-muted">{formatBytes(result.size)}</p>
               <a
                 href={result.url}
                 download={`${file.name.replace(/\.[^.]+$/, '')}-${width}x${height}.${format === 'image/png' ? 'png' : 'jpg'}`}
-                className="mt-3 inline-block rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                onClick={() => offerFromUrl(result.url, `${file.name.replace(/\.[^.]+$/, '')}-${width}x${height}.${format === 'image/png' ? 'png' : 'jpg'}`)}
+                className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download
               </a>

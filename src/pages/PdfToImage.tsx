@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import JSZip from 'jszip'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
@@ -101,9 +101,9 @@ export default function PdfToImage() {
         <Dropzone accept="application/pdf" onFiles={handleFiles} label="Klik atau drop file PDF di sini" />
       )}
 
-      {loading && <p className="mt-4 text-sm text-ink/55">Membuka PDF…</p>}
+      {loading && <p className="mt-4 text-sm text-muted">Membuka PDF…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -111,21 +111,21 @@ export default function PdfToImage() {
       {file && pages.length > 0 && (
         <div>
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm tabular-nums text-ink/50">
+            <p className="text-sm tabular-nums text-muted">
               {selected.length} dari {pages.length} halaman dipilih
             </p>
             <div className="flex gap-2 text-sm">
               <button
                 type="button"
                 onClick={() => selectAll(true)}
-                className="rounded-full bg-ink/5 px-3 py-1 text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Pilih semua
               </button>
               <button
                 type="button"
                 onClick={() => selectAll(false)}
-                className="rounded-full bg-ink/5 px-3 py-1 text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Kosongkan
               </button>
@@ -161,7 +161,7 @@ export default function PdfToImage() {
           <div className="mt-6">
             <label className="flex items-center justify-between text-sm">
               <span>Kualitas JPG</span>
-              <span className="tabular-nums text-ink/50">{Math.round(quality * 100)}%</span>
+              <span className="tabular-nums text-muted">{Math.round(quality * 100)}%</span>
             </label>
             <input
               type="range"
@@ -178,7 +178,7 @@ export default function PdfToImage() {
             type="button"
             onClick={exportImages}
             disabled={working || selected.length === 0}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working
               ? progress || 'Mengekspor…'

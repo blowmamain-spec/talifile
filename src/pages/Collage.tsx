@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { SortableList, DragHandle } from '../components/SortableList'
@@ -156,7 +156,7 @@ export default function Collage() {
       )}
 
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
@@ -178,7 +178,7 @@ export default function Collage() {
                       type="button"
                       onClick={() => remove(item.id)}
                       aria-label="Hapus gambar"
-                      className="rounded-full bg-ground/90 p-1.5 text-ink/60 transition-colors hover:bg-red-500 hover:text-white focus-visible:outline-2 focus-visible:outline-brand-500"
+                      className="rounded-full bg-ground/90 p-1.5 text-muted transition-colors hover:bg-red-500 hover:text-white focus-visible:outline-2 focus-visible:outline-brand-500"
                     >
                       <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3">
                         <path strokeLinecap="round" d="M4 4l8 8m0-8-8 8" />
@@ -223,7 +223,7 @@ export default function Collage() {
               <div>
                 <label className="flex items-center justify-between text-sm">
                   <span>Jarak</span>
-                  <span className="tabular-nums text-ink/50">{gap}px</span>
+                  <span className="tabular-nums text-muted">{gap}px</span>
                 </label>
                 <input
                   type="range"
@@ -238,7 +238,7 @@ export default function Collage() {
               <div>
                 <label className="flex items-center justify-between text-sm">
                   <span>Sudut membulat</span>
-                  <span className="tabular-nums text-ink/50">{radius}px</span>
+                  <span className="tabular-nums text-muted">{radius}px</span>
                 </label>
                 <input
                   type="range"
@@ -280,7 +280,7 @@ export default function Collage() {
           </div>
 
           <div className="md:sticky md:top-6 md:self-start">
-            <p className="mb-2 text-sm font-medium text-ink/55">Pratinjau</p>
+            <p className="mb-2 text-sm font-medium text-muted">Pratinjau</p>
             <canvas
               ref={canvasRef}
               aria-label="Pratinjau kolase"
@@ -290,7 +290,7 @@ export default function Collage() {
               type="button"
               onClick={download}
               disabled={working}
-              className="mt-4 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               {working ? 'Menyimpan…' : `Download ${bg === 'transparent' ? 'PNG' : 'JPG'}`}
             </button>

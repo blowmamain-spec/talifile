@@ -1,29 +1,58 @@
 import { StrictMode, Suspense, lazy } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { inject } from '@vercel/analytics'
 import './index.css'
 import Layout from './Layout'
 
+// Cookieless page-view counts only (see /privasi). The script is served from this same origin by Vercel.
+if (import.meta.env.PROD) inject()
+
+const pages = {
+  'remove-background': lazy(() => import('./pages/RemoveBackground')),
+  'pas-foto': lazy(() => import('./pages/PasFoto')),
+  compress: lazy(() => import('./pages/Compress')),
+  'crop-resize': lazy(() => import('./pages/CropResize')),
+  'resize-banyak': lazy(() => import('./pages/ResizeBanyak')),
+  'putar-gambar': lazy(() => import('./pages/PutarGambar')),
+  'convert-image': lazy(() => import('./pages/ConvertImage')),
+  'sensor-gambar': lazy(() => import('./pages/SensorGambar')),
+  'watermark-gambar': lazy(() => import('./pages/WatermarkGambar')),
+  'hapus-metadata': lazy(() => import('./pages/HapusMetadata')),
+  collage: lazy(() => import('./pages/Collage')),
+  'image-to-pdf': lazy(() => import('./pages/ImageToPdf')),
+  'merge-pdf': lazy(() => import('./pages/MergePdf')),
+  'split-pdf': lazy(() => import('./pages/SplitPdf')),
+  'organize-pdf': lazy(() => import('./pages/OrganizePdf')),
+  'sign-pdf': lazy(() => import('./pages/SignPdf')),
+  'tambah-teks-pdf': lazy(() => import('./pages/TambahTeksPdf')),
+  'fill-pdf-form': lazy(() => import('./pages/FillPdfForm')),
+  'sensor-pdf': lazy(() => import('./pages/SensorPdf')),
+  'watermark-pdf': lazy(() => import('./pages/WatermarkPdf')),
+  'page-numbers': lazy(() => import('./pages/PageNumbers')),
+  'protect-pdf': lazy(() => import('./pages/ProtectPdf')),
+  'pdf-to-image': lazy(() => import('./pages/PdfToImage')),
+  'pdf-ke-teks': lazy(() => import('./pages/PdfKeTeks')),
+  'ocr-pdf': lazy(() => import('./pages/OcrPdf')),
+  'ukuran-halaman': lazy(() => import('./pages/UkuranHalaman')),
+  'n-up': lazy(() => import('./pages/NUp')),
+  'crop-pdf': lazy(() => import('./pages/CropPdf')),
+  'info-pdf': lazy(() => import('./pages/InfoPdf')),
+  'qr-code': lazy(() => import('./pages/QrCode')),
+  tentang: lazy(() => import('./pages/Tentang')),
+  privasi: lazy(() => import('./pages/Privasi')),
+  share: lazy(() => import('./pages/Share')),
+}
+
 const Home = lazy(() => import('./pages/Home'))
-const RemoveBackground = lazy(() => import('./pages/RemoveBackground'))
-const Compress = lazy(() => import('./pages/Compress'))
-const ImageToPdf = lazy(() => import('./pages/ImageToPdf'))
-const PdfToImage = lazy(() => import('./pages/PdfToImage'))
-const MergePdf = lazy(() => import('./pages/MergePdf'))
-const OrganizePdf = lazy(() => import('./pages/OrganizePdf'))
-const WatermarkPdf = lazy(() => import('./pages/WatermarkPdf'))
-const SignPdf = lazy(() => import('./pages/SignPdf'))
-const SplitPdf = lazy(() => import('./pages/SplitPdf'))
-const CropResize = lazy(() => import('./pages/CropResize'))
-const ConvertImage = lazy(() => import('./pages/ConvertImage'))
-const FillPdfForm = lazy(() => import('./pages/FillPdfForm'))
-const OcrPdf = lazy(() => import('./pages/OcrPdf'))
-const PageNumbers = lazy(() => import('./pages/PageNumbers'))
-const ProtectPdf = lazy(() => import('./pages/ProtectPdf'))
-const Collage = lazy(() => import('./pages/Collage'))
+const NotFound = lazy(() => import('./pages/NotFound'))
 
 function RouteFallback() {
-  return <p className="py-16 text-center text-sm text-ink/40">Memuat…</p>
+  return (
+    <p className="py-16 text-center text-sm text-muted" role="status">
+      Memuat…
+    </p>
+  )
 }
 
 createRoot(document.getElementById('root')!).render(
@@ -33,22 +62,10 @@ createRoot(document.getElementById('root')!).render(
         <Routes>
           <Route element={<Layout />}>
             <Route index element={<Home />} />
-            <Route path="remove-background" element={<RemoveBackground />} />
-            <Route path="compress" element={<Compress />} />
-            <Route path="crop-resize" element={<CropResize />} />
-            <Route path="convert-image" element={<ConvertImage />} />
-            <Route path="fill-pdf-form" element={<FillPdfForm />} />
-            <Route path="ocr-pdf" element={<OcrPdf />} />
-            <Route path="image-to-pdf" element={<ImageToPdf />} />
-            <Route path="pdf-to-image" element={<PdfToImage />} />
-            <Route path="merge-pdf" element={<MergePdf />} />
-            <Route path="organize-pdf" element={<OrganizePdf />} />
-            <Route path="watermark-pdf" element={<WatermarkPdf />} />
-            <Route path="sign-pdf" element={<SignPdf />} />
-            <Route path="split-pdf" element={<SplitPdf />} />
-            <Route path="page-numbers" element={<PageNumbers />} />
-            <Route path="protect-pdf" element={<ProtectPdf />} />
-            <Route path="collage" element={<Collage />} />
+            {Object.entries(pages).map(([path, Page]) => (
+              <Route key={path} path={path} element={<Page />} />
+            ))}
+            <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </Suspense>

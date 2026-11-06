@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PDFDocument, StandardFonts, rgb, degrees } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { toBlob } from '../lib/format'
@@ -100,12 +100,12 @@ export default function WatermarkPdf() {
 
       {file && (
         <div>
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-ink/[0.03] px-4 py-3.5">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-3.5">
             <p className="truncate font-medium">{file.name}</p>
             <button
               type="button"
               onClick={() => setFile(null)}
-              className="shrink-0 rounded-full bg-ink/5 px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="shrink-0 inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Ganti file
             </button>
@@ -124,7 +124,7 @@ export default function WatermarkPdf() {
                 maxLength={60}
                 autoComplete="off"
                 spellCheck={false}
-                className="mt-1.5 w-full rounded-lg bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                className="mt-1.5 w-full rounded-lg bg-surface px-3 py-2 text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
                 placeholder="mis. RAHASIA, DRAFT, COPY"
               />
             </div>
@@ -132,7 +132,7 @@ export default function WatermarkPdf() {
             <div>
               <label className="flex items-center justify-between text-sm">
                 <span>Ukuran teks</span>
-                <span className="tabular-nums text-ink/50">{fontSize}px</span>
+                <span className="tabular-nums text-muted">{fontSize}px</span>
               </label>
               <input
                 type="range"
@@ -148,7 +148,7 @@ export default function WatermarkPdf() {
             <div>
               <label className="flex items-center justify-between text-sm">
                 <span>Transparansi</span>
-                <span className="tabular-nums text-ink/50">{Math.round(opacity * 100)}%</span>
+                <span className="tabular-nums text-muted">{Math.round(opacity * 100)}%</span>
               </label>
               <input
                 type="range"
@@ -164,7 +164,7 @@ export default function WatermarkPdf() {
             <div>
               <label className="flex items-center justify-between text-sm">
                 <span>Rotasi</span>
-                <span className="tabular-nums text-ink/50">{angle}°</span>
+                <span className="tabular-nums text-muted">{angle}°</span>
               </label>
               <input
                 type="range"
@@ -178,7 +178,7 @@ export default function WatermarkPdf() {
             </div>
           </div>
 
-          <p className="mt-6 mb-2 text-sm font-medium text-ink/55">Pratinjau halaman 1</p>
+          <p className="mt-6 mb-2 text-sm font-medium text-muted">Pratinjau halaman 1</p>
           {preview ? (
             <div
               className="relative mx-auto max-w-sm overflow-hidden rounded-xl bg-white ring-1 ring-ink/10"
@@ -201,13 +201,13 @@ export default function WatermarkPdf() {
               </span>
             </div>
           ) : (
-            <div className="flex h-40 items-center justify-center rounded-xl bg-ink/[0.03] text-sm text-ink/45">
+            <div className="flex h-40 items-center justify-center rounded-xl bg-surface ring-1 ring-ink/10 text-sm text-muted">
               Memuat pratinjau…
             </div>
           )}
 
           {error && (
-            <p className="mt-4 text-sm text-red-600" role="alert">
+            <p className="mt-4 text-sm text-danger" role="alert">
               {error}
             </p>
           )}
@@ -216,7 +216,7 @@ export default function WatermarkPdf() {
             type="button"
             onClick={apply}
             disabled={working || !text.trim()}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Memproses…' : 'Tambahkan Watermark'}
           </button>

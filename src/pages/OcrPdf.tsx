@@ -121,7 +121,7 @@ export default function OcrPdf() {
 
       {file && (
         <div>
-          <div className="flex items-center justify-between gap-4 rounded-xl bg-ink/[0.03] px-4 py-3.5">
+          <div className="flex items-center justify-between gap-4 rounded-xl bg-surface ring-1 ring-ink/10 px-4 py-3.5">
             <p className="truncate font-medium">{file.name}</p>
             <button
               type="button"
@@ -129,7 +129,7 @@ export default function OcrPdf() {
                 setFile(null)
                 setText('')
               }}
-              className="shrink-0 rounded-full bg-ink/5 px-4 py-1.5 text-sm text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="shrink-0 inline-flex min-h-11 items-center rounded-full bg-surface px-4 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               Ganti file
             </button>
@@ -159,7 +159,7 @@ export default function OcrPdf() {
           </fieldset>
 
           {error && (
-            <p className="mt-4 text-sm text-red-600" role="alert">
+            <p className="mt-4 text-sm text-danger" role="alert">
               {error}
             </p>
           )}
@@ -169,7 +169,7 @@ export default function OcrPdf() {
               type="button"
               onClick={run}
               disabled={working}
-              className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
             >
               {working ? progress || 'Memproses…' : 'Mulai OCR'}
             </button>
@@ -177,14 +177,14 @@ export default function OcrPdf() {
               <button
                 type="button"
                 onClick={cancel}
-                className="rounded-full bg-ink/5 px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="inline-flex min-h-11 items-center rounded-full bg-surface px-5 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Batal
               </button>
             )}
           </div>
           {!working && !text && (
-            <p className="mt-3 text-xs text-ink/50">
+            <p className="mt-3 text-xs text-muted">
               Pertama kali dipakai, data bahasa (beberapa MB) diunduh dulu. Setelah itu lebih cepat.
             </p>
           )}
@@ -195,20 +195,20 @@ export default function OcrPdf() {
                 readOnly
                 value={text}
                 rows={14}
-                className="w-full resize-y rounded-lg bg-ink/[0.04] px-3 py-2 font-mono text-sm outline-none ring-1 ring-transparent focus-visible:ring-brand-500"
+                className="w-full resize-y rounded-lg bg-surface px-3 py-2 font-mono text-sm outline-none ring-1 ring-ink/15 focus-visible:ring-brand-500"
               />
               <div className="mt-3 flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={copyText}
-                  className="rounded-full bg-ink/5 px-5 py-2 text-sm font-medium text-ink/70 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="inline-flex min-h-11 items-center rounded-full bg-surface px-5 text-sm font-medium text-ink ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   {copied ? 'Tersalin!' : 'Salin teks'}
                 </button>
                 <button
                   type="button"
                   onClick={downloadText}
-                  className="rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
                 >
                   Download .txt
                 </button>

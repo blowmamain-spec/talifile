@@ -53,13 +53,13 @@ export default function DateStamp({ onChange }: { onChange: (dataUrl: string | n
   return (
     <div className="space-y-3">
       <div>
-        <label htmlFor="stamp-date" className="text-xs font-medium text-ink/60">
+        <label htmlFor="stamp-date" className="text-xs font-medium text-muted">
           Tanggal
         </label>
         <input id="stamp-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} className={field} />
       </div>
       <div>
-        <label htmlFor="stamp-place" className="text-xs font-medium text-ink/60">
+        <label htmlFor="stamp-place" className="text-xs font-medium text-muted">
           Tempat (opsional)
         </label>
         <input
@@ -81,7 +81,7 @@ export default function DateStamp({ onChange }: { onChange: (dataUrl: string | n
             onClick={() => setFormat(f)}
             aria-pressed={format === f}
             className={`flex-1 rounded-full px-2 py-1.5 font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500 ${
-              format === f ? 'bg-ground text-ink' : 'text-ink/55 hover:text-ink'
+              format === f ? 'bg-ground text-ink' : 'text-muted hover:text-ink'
             }`}
           >
             {formatStampText(date || todayIso(), f, '')}

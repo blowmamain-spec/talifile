@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PDFDocument, degrees } from 'pdf-lib'
-import { saveAs } from 'file-saver'
+import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { SortableList, DragHandle } from '../components/SortableList'
@@ -100,16 +100,16 @@ export default function OrganizePdf() {
         />
       )}
 
-      {loading && <p className="mt-4 text-sm text-ink/55">Membuka PDF…</p>}
+      {loading && <p className="mt-4 text-sm text-muted">Membuka PDF…</p>}
       {error && (
-        <p className="mt-4 text-sm text-red-600" role="alert">
+        <p className="mt-4 text-sm text-danger" role="alert">
           {error}
         </p>
       )}
 
       {file && pages.length > 0 && (
         <div>
-          <p className="mb-4 text-sm tabular-nums text-ink/50">
+          <p className="mb-4 text-sm tabular-nums text-muted">
             {pages.length} halaman · seret buat ubah urutan
           </p>
 
@@ -127,7 +127,7 @@ export default function OrganizePdf() {
                   type="button"
                   onClick={() => remove(p.id)}
                   aria-label="Hapus halaman"
-                  className="absolute right-1 top-1 z-10 rounded-full bg-ink/5 p-1 text-ink/50 transition-colors hover:bg-red-500/10 hover:text-red-600 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                  className="absolute right-1 top-1 z-10 rounded-full bg-ink/5 p-1 text-muted transition-colors hover:bg-red-500/10 hover:text-danger focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                 >
                   <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-3 w-3">
                     <path strokeLinecap="round" d="M4 4l8 8m0-8-8 8" />
@@ -142,14 +142,14 @@ export default function OrganizePdf() {
                   />
                 </div>
                 <div className="flex items-center justify-between bg-ink/5 px-2 py-1">
-                  <span className="text-xs tabular-nums text-ink/60">
+                  <span className="text-xs tabular-nums text-muted">
                     {pages.findIndex((x) => x.id === p.id) + 1}
                   </span>
                   <button
                     type="button"
                     onClick={() => rotate(p.id)}
                     aria-label="Putar 90 derajat"
-                    className="rounded-full bg-ink/5 p-1 text-ink/50 transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
+                    className="rounded-full bg-ink/5 p-1 text-muted transition-colors hover:bg-ink/10 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                   >
                     <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="h-3.5 w-3.5">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M13 7.5A5 5 0 1 1 10.5 3" />
@@ -165,7 +165,7 @@ export default function OrganizePdf() {
             type="button"
             onClick={save}
             disabled={working}
-            className="mt-6 rounded-full bg-brand-500 px-5 py-2 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
           >
             {working ? 'Menyimpan…' : 'Simpan PDF'}
           </button>
