@@ -8,6 +8,9 @@ import Layout from './Layout'
 // Cookieless page-view counts only (see /privasi). The script is served from this same origin by Vercel.
 if (import.meta.env.PROD) inject()
 
+// Older versions cached the background-removal model in the service worker (100+ MB). That route is gone, so free the space.
+if ('caches' in window) caches.delete('bg-removal-model').catch(() => {})
+
 const pages = {
   'remove-background': lazy(() => import('./pages/RemoveBackground')),
   'pas-foto': lazy(() => import('./pages/PasFoto')),

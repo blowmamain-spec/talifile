@@ -4,6 +4,7 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { Button, Chips, ErrorText, FileBar, Panel, Slider, baseName, canvasToBlob } from '../components/ui'
 import { deliver } from '../lib/handoff'
+import { removeBackgroundSafe } from '../lib/bgRemoval'
 
 type Size = '2x3' | '3x4' | '4x6'
 type Bg = 'merah' | 'biru' | 'putih'
@@ -39,18 +40,7 @@ export default function PasFoto() {
     try {
       if (strip) {
         setProgress('Menyiapkan penghapus latar…')
-        const { removeBackground } = await import('@imgly/background-removal')
-        const blob = await removeBackground(f, {
-          device: 'gpu',
-          proxyToWorker: true,
-          model: 'isnet_fp16',
-          progress: (key, cur, total) =>
-            setProgress(
-              key.startsWith('fetch')
-                ? `Mengunduh model… ${Math.round((cur / total) * 100)}%`
-                : `Menghapus latar… ${Math.round((cur / total) * 100)}%`,
-            ),
-        })
+        const blob = await removeBackgroundSafe(f, 'isnet_fp16', setProgress)
         setCutout(await createImageBitmap(blob))
       } else {
         setCutout(await createImageBitmap(f))

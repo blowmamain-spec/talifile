@@ -75,15 +75,9 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: { cacheName: 'heic-decoder', expiration: { maxEntries: 2 } },
           },
-          {
-            urlPattern: ({ url }) => url.hostname === 'staticimgly.com',
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'bg-removal-model',
-              expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 90 },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
+          // The background-removal model (staticimgly.com) is deliberately NOT routed through the service worker:
+          // its ~25 parallel 4 MB chunks can take minutes on slow connections, and Chrome kills a service worker
+          // fetch after 5 minutes, which failed the whole download. The browser HTTP cache (ETag) handles reuse.
         ],
       },
     }),

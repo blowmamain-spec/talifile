@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import ToolShell from '../components/ToolShell'
+import { removeBackgroundSafe } from '../lib/bgRemoval'
 import { offerFromUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
@@ -21,6 +22,7 @@ export default function RemoveBackground() {
   const [status, setStatus] = useState<Status>('idle')
   const [progressLabel, setProgressLabel] = useState('')
   const [error, setError] = useState('')
+  const [errorDetail, setErrorDetail] = useState('')
   const cancelledRef = useRef(false)
 
   async function handleFiles(files: File[]) {
@@ -30,23 +32,16 @@ export default function RemoveBackground() {
     setOriginal({ url: URL.createObjectURL(file), file })
     setResultUrl(null)
     setError('')
+    setErrorDetail('')
     setStatus('loading')
     setProgressLabel('Menyiapkan model…')
     try {
-      const { removeBackground } = await import('@imgly/background-removal')
-      const blob = await removeBackground(file, {
-        device: 'gpu',
-        proxyToWorker: true,
-        model: quality,
-        progress: (key, current, total) => {
-          if (cancelledRef.current) return
-          setProgressLabel(
-            key.startsWith('fetch')
-              ? `Mengunduh model… ${Math.round((current / total) * 100)}%`
-              : `Memproses gambar… ${Math.round((current / total) * 100)}%`,
-          )
-        },
-      })
+      const blob = await removeBackgroundSafe(
+        file,
+        quality,
+        (s) => !cancelledRef.current && setProgressLabel(s),
+        () => cancelledRef.current,
+      )
       if (cancelledRef.current) return
       setResultUrl(URL.createObjectURL(blob))
       setResultSize(blob.size)
@@ -54,7 +49,13 @@ export default function RemoveBackground() {
     } catch (err) {
       if (cancelledRef.current) return
       console.error(err)
-      setError('Gagal menghapus background. Coba gambar lain atau refresh halaman.')
+      const detail = err instanceof Error ? err.message : String(err)
+      setError(
+        /fetch|network|Failed to fetch|size/i.test(detail)
+          ? 'Model AI gagal diunduh. Cek koneksi internet, lalu coba lagi.'
+          : 'Perangkat ini belum bisa menjalankan penghapus background. Coba di browser Chrome versi terbaru, atau di perangkat lain.',
+      )
+      setErrorDetail(detail)
       setStatus('error')
     }
   }
@@ -131,7 +132,17 @@ export default function RemoveBackground() {
                 aria-live="polite"
               >
                 {status === 'loading' && <p className="px-4 text-center text-sm text-muted">{progressLabel}</p>}
-                {status === 'error' && <p className="px-4 text-center text-sm text-danger">{error}</p>}
+                {status === 'error' && (
+                  <div className="px-4 py-6 text-center">
+                    <p className="text-sm text-danger">{error}</p>
+                    {errorDetail && (
+                      <details className="mt-3 text-left text-xs text-muted">
+                        <summary className="cursor-pointer text-center">Detail teknis (untuk laporan)</summary>
+                        <p className="mt-2 break-all font-mono">{errorDetail}</p>
+                      </details>
+                    )}
+                  </div>
+                )}
                 {resultUrl && (
                   <img src={resultUrl} alt="Gambar dengan background sudah dihapus" className="w-full object-contain" />
                 )}
