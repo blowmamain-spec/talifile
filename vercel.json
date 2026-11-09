@@ -1,4 +1,11 @@
 {
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/convert-image", "destination": "/konversi", "permanent": true },
+    { "source": "/image-to-pdf", "destination": "/konversi", "permanent": true },
+    { "source": "/pdf-to-image", "destination": "/konversi", "permanent": true },
+    { "source": "/pdf-ke-teks", "destination": "/konversi", "permanent": true }
+  ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {

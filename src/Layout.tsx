@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import ThemeToggle from './components/ThemeToggle'
 import Rope from './components/Rope'
 import { tools } from './tools'
+import { pageSeo, toolSeo } from './seo'
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   `inline-flex min-h-11 items-center rounded-full px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
@@ -16,10 +17,11 @@ export default function Layout() {
   useEffect(() => {
     window.scrollTo(0, 0)
     const tool = tools.find((t) => t.path === pathname)
-    const named: Record<string, string> = { '/tentang': 'Tentang', '/privasi': 'Privasi' }
-    const title = tool?.title ?? named[pathname]
-    document.title = title ? `${title} · TaliFile` : 'TaliFile: Toolkit File & Gambar'
-    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://talifile.nfab.my.id${pathname}`)
+    // Same title and description as the static page for this URL (src/seo.ts), since Google reads the rendered DOM.
+    const seo = (tool && toolSeo[tool.id]) || pageSeo[pathname] || pageSeo['/']
+    document.title = seo.title
+    document.querySelector('meta[name="description"]')?.setAttribute('content', seo.description)
+    document.querySelector('link[rel="canonical"]')?.setAttribute('href', `https://talifile.nfab.my.id${pathname === '/' ? '/' : pathname}`)
   }, [pathname])
 
   return (
