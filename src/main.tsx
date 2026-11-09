@@ -42,6 +42,7 @@ const pages = {
   'crop-pdf': lazy(() => import('./pages/CropPdf')),
   'info-pdf': lazy(() => import('./pages/InfoPdf')),
   'qr-code': lazy(() => import('./pages/QrCode')),
+  konversi: lazy(() => import('./pages/Konversi')),
   tentang: lazy(() => import('./pages/Tentang')),
   privasi: lazy(() => import('./pages/Privasi')),
   share: lazy(() => import('./pages/Share')),

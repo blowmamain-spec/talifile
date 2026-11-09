@@ -3,7 +3,7 @@ import { PDFDocument } from 'pdf-lib'
 import { deliver as saveAs } from '../lib/handoff'
 import JSZip from 'jszip'
 import ToolShell from '../components/ToolShell'
-import { offerFromUrl } from '../lib/handoff'
+import { blobFromUrl, deliverFromUrl, objectUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes, toBlob } from '../lib/format'
 import { Chips, Slider } from '../components/ui'
@@ -114,7 +114,7 @@ export default function Compress() {
         setItems((prev) =>
           prev.map((i) =>
             i.id === item.id
-              ? { ...i, status: 'done', outSize: blob.size, outUrl: URL.createObjectURL(blob) }
+              ? { ...i, status: 'done', outSize: blob.size, outUrl: objectUrl(blob) }
               : i,
           ),
         )
@@ -136,7 +136,7 @@ export default function Compress() {
     const zip = new JSZip()
     for (const item of doneItems) {
       if (!item.outUrl) continue
-      const blob = await (await fetch(item.outUrl)).blob()
+      const blob = blobFromUrl(item.outUrl)
       zip.file(item.outName, blob)
     }
     const zipBlob = await zip.generateAsync({ type: 'blob' })
@@ -174,7 +174,7 @@ export default function Compress() {
                   <a
                     href={item.outUrl}
                     download={item.outName}
-                    onClick={() => offerFromUrl(item.outUrl!, item.outName)}
+                    onClick={(e) => { e.preventDefault(); deliverFromUrl(item.outUrl!, item.outName) }}
                     className="shrink-0 rounded-full px-3 py-1 text-xs font-medium text-brand-600 transition-colors hover:bg-brand-500/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-brand-500"
                   >
                     Download

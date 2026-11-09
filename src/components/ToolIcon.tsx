@@ -110,6 +110,12 @@ const paths: Record<string, React.ReactNode> = {
       <rect x="12" y="11" width="5.5" height="6.5" rx="1.2" />
     </>
   ),
+  konversi: (
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4 7h11.5M12.5 4l3 3-3 3" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 13H4.5M7.5 10l-3 3 3 3" />
+    </>
+  ),
   'pas-foto': (
     <>
       <rect x="4" y="2.5" width="12" height="15" rx="1.6" />

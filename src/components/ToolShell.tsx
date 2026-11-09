@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ToolIcon from './ToolIcon'
 import { categoryLabels, toolById, tools, toolAccepts } from '../tools'
 import { pushRecent } from '../lib/recent'
-import { clearLastOutput, setCurrentTool, setPendingFiles, useLastOutput } from '../lib/handoff'
+import { clearLastOutput, setCurrentTool, setNameOverride, setPendingFiles, useLastOutput, useNameOverride } from '../lib/handoff'
+
+/** True inside Konversi File, which hosts other tools' bodies under its own header. */
+export const EmbeddedContext = createContext(false)
 
 export default function ToolShell({
   icon,
@@ -18,12 +21,18 @@ export default function ToolShell({
   children: ReactNode
 }) {
   const tool = toolById(icon)
+  const embedded = useContext(EmbeddedContext)
 
   useEffect(() => {
+    if (embedded) return
     setCurrentTool(icon)
     clearLastOutput()
+    setNameOverride('')
     if (toolById(icon)) pushRecent(icon)
-  }, [icon])
+  }, [icon, embedded])
+
+  // Hosted: the host page owns the header, file name field, and "continue" panel.
+  if (embedded) return <>{children}</>
 
   return (
     <div>
@@ -47,7 +56,8 @@ export default function ToolShell({
         </div>
       </div>
       <p className="mt-3 max-w-lg text-muted">{description}</p>
-      <div className="mt-8">{children}</div>
+      <FileNameField />
+      <div className="mt-6">{children}</div>
       <NextStep currentId={icon} />
     </div>
   )
@@ -106,5 +116,55 @@ function NextStep({ currentId }: { currentId: string }) {
         )}
       </div>
     </section>
+  )
+}
+
+/** Every download can be renamed. Left empty, tools name files automatically (original name plus what was done). */
+function FileNameField() {
+  const value = useNameOverride()
+  const [open, setOpen] = useState(false)
+  const editing = open || value !== ''
+
+  return (
+    <div className="mt-4 flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 text-sm">
+      <span className="font-medium">Nama file hasil:</span>
+      {editing ? (
+        <>
+          <label className="sr-only" htmlFor="nama-file">Nama file hasil</label>
+          <input
+            id="nama-file"
+            value={value}
+            onChange={(e) => setNameOverride(e.target.value)}
+            placeholder="mis. Surat Lamaran Budi"
+            maxLength={120}
+            autoComplete="off"
+            autoFocus={open && value === ''}
+            className="min-h-10 w-full max-w-72 rounded-lg bg-surface px-3 outline-none ring-1 ring-ink/15 focus-visible:ring-2 focus-visible:ring-brand-500 sm:w-72"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setNameOverride('')
+              setOpen(false)
+            }}
+            className="min-h-10 rounded-full px-2 text-muted underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            Pakai nama otomatis
+          </button>
+          <span className="basis-full text-xs text-muted">Ekstensi (.pdf, .jpg, dll.) ditambahkan otomatis.</span>
+        </>
+      ) : (
+        <>
+          <span className="text-muted">Otomatis</span>
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="inline-flex min-h-10 items-center rounded-full bg-surface px-3.5 font-medium ring-1 ring-ink/15 transition-colors hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+          >
+            Ganti nama
+          </button>
+        </>
+      )}
+    </div>
   )
 }

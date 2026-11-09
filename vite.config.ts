@@ -2,19 +2,52 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { defineConfig } from 'vite'
+import type { Plugin } from 'vite'
 import { readFileSync } from 'node:fs'
 
 // `vite preview` serves the same security headers as production (vercel.json), so CSP problems show up locally first.
 const vercel = JSON.parse(readFileSync(new URL('./vercel.json', import.meta.url), 'utf8')) as {
   headers: { source: string; headers: { key: string; value: string }[] }[]
 }
-const prodHeaders = Object.fromEntries(
-  (vercel.headers.find((h) => h.source === '/(.*)')?.headers ?? []).map((h) => [h.key, h.value]),
-)
+/** Applies vercel.json header rules per request path, the way Vercel does (sources here are plain regexes). */
+function previewHeaders(): Plugin {
+  const rules = vercel.headers.map((r) => ({ re: new RegExp('^' + r.source + '$'), headers: r.headers }))
+  return {
+    name: 'preview-vercel-headers',
+    configurePreviewServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const path = (req.url ?? '/').split('?')[0]
+        for (const r of rules) if (r.re.test(path)) for (const h of r.headers) res.setHeader(h.key, h.value)
+        next()
+      })
+    },
+  }
+}
+
+/**
+ * @imgly/background-removal downloads onnxruntime's wasm glue from its CDN and loads it from a blob: URL,
+ * which our CSP (script-src without blob:) blocks, so background removal failed in production.
+ * onnxruntime's bundles already embed that glue and load their wasm from this origin, so this drops the override.
+ * The build fails loudly if the library changes shape, instead of silently shipping the broken path.
+ */
+function ortSameOrigin(): Plugin {
+  const pattern = /const wasmPath = await loadAsUrl\([^;]+;\s*const mjsPath = await loadAsUrl\([^;]+;\s*ort2\.env\.wasm\.wasmPaths = \{[^}]*\};/
+  return {
+    name: 'ort-same-origin',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.replace(/\\/g, '/').includes('@imgly/background-removal/dist/index.mjs')) return
+      if (!pattern.test(code)) this.error('ort-same-origin: wasmPaths override not found, check @imgly/background-removal')
+      return code.replace(pattern, '/* ort-same-origin: use onnxruntime defaults (same-origin, CSP-safe) */')
+    },
+  }
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    ortSameOrigin(),
+    previewHeaders(),
     react(),
     tailwindcss(),
     VitePWA({
@@ -84,8 +117,6 @@ export default defineConfig({
   ],
   worker: {
     format: 'es',
-  },
-  preview: {
-    headers: prodHeaders,
+    plugins: () => [ortSameOrigin()],
   },
 })

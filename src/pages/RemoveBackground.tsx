@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import ToolShell from '../components/ToolShell'
 import { removeBackgroundSafe } from '../lib/bgRemoval'
-import { offerFromUrl } from '../lib/handoff'
+import { deliverFromUrl, objectUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
 
@@ -43,7 +43,7 @@ export default function RemoveBackground() {
         () => cancelledRef.current,
       )
       if (cancelledRef.current) return
-      setResultUrl(URL.createObjectURL(blob))
+      setResultUrl(objectUrl(blob))
       setResultSize(blob.size)
       setStatus('done')
     } catch (err) {
@@ -156,7 +156,7 @@ export default function RemoveBackground() {
               <a
                 href={resultUrl}
                 download={`${original.file.name.replace(/\.[^.]+$/, '')}-no-bg.png`}
-                onClick={() => offerFromUrl(resultUrl, `${original.file.name.replace(/\.[^.]+$/, '')}-no-bg.png`)}
+                onClick={(e) => { e.preventDefault(); deliverFromUrl(resultUrl, `${original.file.name.replace(/\.[^.]+$/, '')}-no-bg.png`) }}
                 className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download PNG

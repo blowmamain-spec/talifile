@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
-import { Button, ErrorText, FileBar, Slider } from '../components/ui'
+import { Button, ErrorText, FileBar } from '../components/ui'
+import { CropFrame } from '../components/ResizableBox'
 import { usePagePreview, usePdfDoc } from '../lib/pdfPreview'
 import { renderPageToCanvas } from '../lib/pdfjs'
 import { deliver } from '../lib/handoff'
@@ -28,6 +29,7 @@ export default function CropPdf() {
   const [working, setWorking] = useState(false)
   const [detecting, setDetecting] = useState(false)
   const [error, setError] = useState('')
+  const stageRef = useRef<HTMLDivElement>(null)
 
   // Finds the first non-white rows/columns on page 1 and leaves a small breathing gap.
   async function autoDetect() {
@@ -92,7 +94,6 @@ export default function CropPdf() {
 
   const pct = (v: number) => `${Math.round(v * 100)}%`
   const changed = m.top + m.right + m.bottom + m.left > 0
-  const set = (k: keyof Margins) => (v: number) => setM((prev) => ({ ...prev, [k]: Math.min(v, 0.45) }))
 
   return (
     <ToolShell icon="crop-pdf" title="Crop PDF" description="Potong margin putih yang terlalu lebar. Potongan yang sama dipakai di semua halaman.">
@@ -105,14 +106,13 @@ export default function CropPdf() {
             <div>
               <p className="mb-2 text-sm font-medium text-muted">Pratinjau halaman 1</p>
               {preview ? (
-                <div className="relative overflow-hidden rounded-xl bg-white ring-1 ring-ink/15">
-                  <img src={preview.dataUrl} alt="Halaman pertama" className="block w-full" />
-                  {/* Dimmed bands show what will be cut away. */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 bg-ink/45" style={{ height: pct(m.top) }} />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-ink/45" style={{ height: pct(m.bottom) }} />
-                  <div className="pointer-events-none absolute left-0 bg-ink/45" style={{ top: pct(m.top), bottom: pct(m.bottom), width: pct(m.left) }} />
-                  <div className="pointer-events-none absolute right-0 bg-ink/45" style={{ top: pct(m.top), bottom: pct(m.bottom), width: pct(m.right) }} />
-                  <div className="pointer-events-none absolute border-2 border-dashed border-accent-500" style={{ top: pct(m.top), bottom: pct(m.bottom), left: pct(m.left), right: pct(m.right) }} />
+                <div ref={stageRef} className="relative select-none rounded-xl bg-white ring-1 ring-ink/15">
+                  <img src={preview.dataUrl} alt="Halaman pertama" draggable={false} className="block w-full rounded-xl" />
+                  <CropFrame
+                    stageRef={stageRef}
+                    rect={{ x: m.left, y: m.top, w: 1 - m.left - m.right, h: 1 - m.top - m.bottom }}
+                    onChange={(r) => setM({ left: r.x, top: r.y, right: 1 - r.x - r.w, bottom: 1 - r.y - r.h })}
+                  />
                 </div>
               ) : (
                 <div className="flex h-80 items-center justify-center rounded-xl bg-surface text-sm text-muted ring-1 ring-ink/10">Memuat halaman…</div>
@@ -122,10 +122,15 @@ export default function CropPdf() {
               <Button variant="secondary" onClick={autoDetect} disabled={detecting || !preview}>
                 {detecting ? 'Mendeteksi…' : 'Deteksi margin otomatis'}
               </Button>
-              <Slider label="Atas" value={m.top} display={pct(m.top)} min={0} max={0.45} step={0.005} onChange={set('top')} />
-              <Slider label="Bawah" value={m.bottom} display={pct(m.bottom)} min={0} max={0.45} step={0.005} onChange={set('bottom')} />
-              <Slider label="Kiri" value={m.left} display={pct(m.left)} min={0} max={0.45} step={0.005} onChange={set('left')} />
-              <Slider label="Kanan" value={m.right} display={pct(m.right)} min={0} max={0.45} step={0.005} onChange={set('right')} />
+              <p className="text-sm text-muted">Tarik titik di sisi atau pojok kotak pada pratinjau. Potongan yang sama dipakai di semua halaman.</p>
+              <dl className="grid grid-cols-2 gap-2 text-sm tabular-nums">
+                {(['top', 'bottom', 'left', 'right'] as const).map((k) => (
+                  <div key={k} className="rounded-lg bg-surface px-3 py-2 ring-1 ring-ink/10">
+                    <dt className="text-xs text-muted">{{ top: 'Atas', bottom: 'Bawah', left: 'Kiri', right: 'Kanan' }[k]}</dt>
+                    <dd className="font-medium">{pct(m[k])}</dd>
+                  </div>
+                ))}
+              </dl>
               <ErrorText>{error}</ErrorText>
               <div className="flex flex-wrap gap-3">
                 <Button onClick={run} disabled={working || !changed}>{working ? 'Memotong…' : changed ? 'Potong & download' : 'Atur margin dulu'}</Button>

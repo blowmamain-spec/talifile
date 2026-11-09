@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://talifile.nfab.my.id/</loc></url>
+  <url><loc>https://talifile.nfab.my.id/konversi</loc></url>
   <url><loc>https://talifile.nfab.my.id/remove-background</loc></url>
   <url><loc>https://talifile.nfab.my.id/pas-foto</loc></url>
   <url><loc>https://talifile.nfab.my.id/compress</loc></url>
   <url><loc>https://talifile.nfab.my.id/crop-resize</loc></url>
   <url><loc>https://talifile.nfab.my.id/resize-banyak</loc></url>
   <url><loc>https://talifile.nfab.my.id/putar-gambar</loc></url>
-  <url><loc>https://talifile.nfab.my.id/convert-image</loc></url>
   <url><loc>https://talifile.nfab.my.id/sensor-gambar</loc></url>
   <url><loc>https://talifile.nfab.my.id/watermark-gambar</loc></url>
   <url><loc>https://talifile.nfab.my.id/hapus-metadata</loc></url>
   <url><loc>https://talifile.nfab.my.id/collage</loc></url>
-  <url><loc>https://talifile.nfab.my.id/image-to-pdf</loc></url>
   <url><loc>https://talifile.nfab.my.id/merge-pdf</loc></url>
   <url><loc>https://talifile.nfab.my.id/split-pdf</loc></url>
   <url><loc>https://talifile.nfab.my.id/organize-pdf</loc></url>
@@ -23,8 +22,6 @@
   <url><loc>https://talifile.nfab.my.id/watermark-pdf</loc></url>
   <url><loc>https://talifile.nfab.my.id/page-numbers</loc></url>
   <url><loc>https://talifile.nfab.my.id/protect-pdf</loc></url>
-  <url><loc>https://talifile.nfab.my.id/pdf-to-image</loc></url>
-  <url><loc>https://talifile.nfab.my.id/pdf-ke-teks</loc></url>
   <url><loc>https://talifile.nfab.my.id/ocr-pdf</loc></url>
   <url><loc>https://talifile.nfab.my.id/ukuran-halaman</loc></url>
   <url><loc>https://talifile.nfab.my.id/n-up</loc></url>

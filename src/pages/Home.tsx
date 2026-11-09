@@ -66,7 +66,7 @@ export default function Home() {
           ke mana-mana.
         </h1>
         <p className="mt-5 max-w-xl text-muted sm:text-lg">
-          {tools.length} tools untuk gambar dan PDF. Semuanya jalan di browser kamu, gratis, tanpa akun.
+          {tools.length} tools untuk gambar, PDF, dan dokumen Word. Semuanya jalan di browser kamu, gratis, tanpa akun.
         </p>
 
         <div className="mt-7 max-w-xl">

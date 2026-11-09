@@ -182,8 +182,8 @@ export default function SignPdf() {
         for (const placement of pagePlacements) {
           let sigImage = embedded.get(placement.sig)
           if (!sigImage) {
-            const sigBytes = await (await fetch(placement.sig)).arrayBuffer()
-            sigImage = await pdfDoc.embedPng(sigBytes)
+            // pdf-lib reads the data: URL itself; fetch() on data: URLs is blocked by our CSP.
+            sigImage = await pdfDoc.embedPng(placement.sig)
             embedded.set(placement.sig, sigImage)
           }
           const sigAspect = sigImage.height / sigImage.width

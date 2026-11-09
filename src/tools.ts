@@ -16,6 +16,9 @@ const IMG = 'image/png,image/jpeg,image/webp'
 const PDF = 'application/pdf'
 
 export const tools: Tool[] = [
+  // One entry point for every format change: detects the file type and offers the targets.
+  { id: 'konversi', path: '/konversi', title: 'Konversi File', description: 'Gambar, PDF, Word, atau teks: pilih mau dijadikan format apa.', category: 'lainnya', keywords: 'convert konversi ubah format jpg png webp heic iphone pdf word docx doc txt gambar jadi pdf pdf jadi word pdf jadi gambar', accepts: 'image/png,image/jpeg,image/webp,image/heic,image/heif,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain' },
+
   // Gambar
   { id: 'remove-background', path: '/remove-background', title: 'Remove Background', description: 'Hapus background gambar otomatis, hasil PNG transparan.', category: 'gambar', keywords: 'hapus latar transparan png foto produk', accepts: IMG },
   { id: 'pas-foto', path: '/pas-foto', title: 'Pas Foto', description: 'Ukuran 2x3, 3x4, 4x6 dengan latar merah, biru, atau putih.', category: 'gambar', keywords: 'pasfoto ktp cpns ijazah lamaran background merah biru cetak', accepts: IMG },
@@ -23,12 +26,10 @@ export const tools: Tool[] = [
   { id: 'crop-resize', path: '/crop-resize', title: 'Crop & Resize', description: 'Potong dan ubah ukuran gambar langsung di browser.', category: 'gambar', keywords: 'potong ubah ukuran dimensi pixel', accepts: IMG },
   { id: 'resize-banyak', path: '/resize-banyak', title: 'Resize Banyak Gambar', description: 'Ubah ukuran banyak gambar sekaligus, hasil satu .zip.', category: 'gambar', keywords: 'batch massal sekaligus resize zip', accepts: IMG },
   { id: 'putar-gambar', path: '/putar-gambar', title: 'Putar & Balik', description: 'Putar 90 derajat atau balik gambar seperti cermin.', category: 'gambar', keywords: 'rotate flip mirror cermin miring', accepts: IMG },
-  { id: 'convert-image', path: '/convert-image', title: 'Convert Format Gambar', description: 'Ubah PNG, JPG, WebP, dan HEIC dari iPhone.', category: 'gambar', keywords: 'konversi heic iphone jpg png webp format', accepts: `${IMG},image/heic,image/heif` },
   { id: 'sensor-gambar', path: '/sensor-gambar', title: 'Sensor Gambar', description: 'Tutup NIK, alamat, atau wajah dengan blur atau kotak hitam.', category: 'gambar', keywords: 'blur sensor ktp nik privasi sembunyikan pixel', accepts: IMG },
   { id: 'watermark-gambar', path: '/watermark-gambar', title: 'Watermark Gambar', description: 'Tambahkan teks seperti "Hanya untuk verifikasi" ke foto.', category: 'gambar', keywords: 'watermark ktp verifikasi tanda air teks foto', accepts: IMG },
   { id: 'hapus-metadata', path: '/hapus-metadata', title: 'Hapus Metadata', description: 'Buang lokasi GPS dan info kamera sebelum foto dibagikan.', category: 'gambar', keywords: 'exif gps lokasi privasi metadata kamera', accepts: 'image/jpeg,image/png,image/webp' },
   { id: 'collage', path: '/collage', title: 'Kolase Gambar', description: 'Susun beberapa foto jadi satu gambar grid.', category: 'gambar', keywords: 'kolase grid gabung foto', accepts: IMG },
-  { id: 'image-to-pdf', path: '/image-to-pdf', title: 'Image to PDF', description: 'Gabungkan beberapa gambar jadi satu file PDF.', category: 'gambar', keywords: 'gambar foto jadi pdf scan', accepts: IMG },
 
   // PDF
   { id: 'merge-pdf', path: '/merge-pdf', title: 'Merge PDF', description: 'Gabungkan beberapa PDF jadi satu, urutan bisa diatur.', category: 'pdf', keywords: 'gabung satukan pdf', accepts: PDF },
@@ -41,8 +42,6 @@ export const tools: Tool[] = [
   { id: 'watermark-pdf', path: '/watermark-pdf', title: 'Watermark PDF', description: 'Tambahkan teks watermark ke semua halaman.', category: 'pdf', keywords: 'tanda air draft rahasia', accepts: PDF },
   { id: 'page-numbers', path: '/page-numbers', title: 'Nomor Halaman', description: 'Tambahkan nomor halaman otomatis ke PDF.', category: 'pdf', keywords: 'nomor halaman page number', accepts: PDF },
   { id: 'protect-pdf', path: '/protect-pdf', title: 'Kunci PDF', description: 'Pasang password ke PDF, atau lepas password PDF milikmu.', category: 'pdf', keywords: 'password kunci enkripsi buka unlock', accepts: PDF },
-  { id: 'pdf-to-image', path: '/pdf-to-image', title: 'PDF to Image', description: 'Ekspor halaman PDF jadi gambar JPG.', category: 'pdf', keywords: 'pdf jadi gambar jpg foto', accepts: PDF },
-  { id: 'pdf-ke-teks', path: '/pdf-ke-teks', title: 'PDF ke Teks', description: 'Ambil semua teks dari PDF biasa, bisa disalin.', category: 'pdf', keywords: 'copy salin teks extract txt', accepts: PDF },
   { id: 'ocr-pdf', path: '/ocr-pdf', title: 'OCR PDF', description: 'Ambil teks dari PDF hasil scan.', category: 'pdf', keywords: 'scan baca teks ocr', accepts: PDF },
   { id: 'ukuran-halaman', path: '/ukuran-halaman', title: 'Ubah Ukuran Halaman', description: 'Seragamkan semua halaman ke A4, F4, atau Letter.', category: 'pdf', keywords: 'a4 f4 folio letter ukuran kertas', accepts: PDF },
   { id: 'n-up', path: '/n-up', title: 'Beberapa Halaman per Lembar', description: 'Cetak 2 atau 4 halaman di satu lembar, hemat kertas.', category: 'pdf', keywords: 'nup print hemat kertas 2 4 halaman', accepts: PDF },

@@ -2,7 +2,7 @@ export default function Privasi() {
   return (
     <article className="max-w-2xl pt-4 sm:pt-8">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Privasi</h1>
-      <p className="mt-3 text-muted">Terakhir diperbarui 6 November 2026.</p>
+      <p className="mt-3 text-muted">Terakhir diperbarui 10 November 2026.</p>
 
       <div className="mt-8 space-y-5 leading-relaxed">
         <h2 className="text-xl font-semibold tracking-tight">File kamu</h2>
@@ -36,7 +36,9 @@ export default function Privasi() {
         <p>
           Pilihan tema dan daftar "Terakhir dipakai" disimpan di penyimpanan lokal browser. Data ini tidak keluar dari
           perangkatmu dan bisa dihapus lewat pengaturan browser. Agar bisa dipakai offline, kode aplikasi juga disimpan di
-          cache browser.
+          cache browser. Model AI untuk hapus background disimpan di cache browser setelah pertama diunduh, supaya
+          pemakaian berikutnya tidak perlu mengunduh ulang. Model ini berukuran puluhan MB dan bisa dihapus lewat
+          pengaturan "Hapus data situs".
         </p>
       </div>
     </article>

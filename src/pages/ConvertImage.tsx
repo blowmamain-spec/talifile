@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import ToolShell from '../components/ToolShell'
-import { offerFromUrl } from '../lib/handoff'
+import { deliverFromUrl, objectUrl } from '../lib/handoff'
 import Dropzone from '../components/Dropzone'
 import { formatBytes } from '../lib/format'
 
@@ -61,7 +61,7 @@ export default function ConvertImage() {
       const blob: Blob = await new Promise((resolve) =>
         canvas.toBlob((b) => resolve(b!), format, quality),
       )
-      setResult({ url: URL.createObjectURL(blob), size: blob.size })
+      setResult({ url: objectUrl(blob), size: blob.size })
     } finally {
       setWorking(false)
     }
@@ -168,7 +168,7 @@ export default function ConvertImage() {
               <a
                 href={result.url}
                 download={`${file.name.replace(/\.[^.]+$/, '')}.${ext}`}
-                onClick={() => offerFromUrl(result.url, `${file.name.replace(/\.[^.]+$/, '')}.${ext}`)}
+                onClick={(e) => { e.preventDefault(); deliverFromUrl(result.url, `${file.name.replace(/\.[^.]+$/, '')}.${ext}`) }}
                 className="mt-3 inline-flex min-h-11 items-center justify-center rounded-full bg-brand-500 px-5 text-sm font-medium text-on-brand transition-colors hover:bg-brand-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 Download

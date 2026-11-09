@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
+import ResizableBox from './ResizableBox'
 
 /** A rectangle in fractions (0-1) of the image, so it maps to any output resolution. */
 export type Rect = { id: string; x: number; y: number; w: number; h: number }
@@ -26,6 +27,7 @@ export default function RectEditor({
   const stageRef = useRef<HTMLDivElement>(null)
   const startRef = useRef<{ x: number; y: number } | null>(null)
   const [draft, setDraft] = useState<Rect | null>(null)
+  const [selected, setSelected] = useState<string | null>(null)
 
   function pos(e: ReactPointerEvent) {
     const r = stageRef.current!.getBoundingClientRect()
@@ -34,6 +36,7 @@ export default function RectEditor({
 
   function down(e: ReactPointerEvent<HTMLDivElement>) {
     if (e.button !== 0) return
+    setSelected(null)
     e.currentTarget.setPointerCapture(e.pointerId)
     startRef.current = pos(e)
   }
@@ -48,7 +51,9 @@ export default function RectEditor({
   function up() {
     startRef.current = null
     if (draft && draft.w > 0.01 && draft.h > 0.01) {
-      onChange([...rects, { ...draft, id: `r-${Date.now()}-${Math.random()}` }])
+      const id = `r-${Date.now()}-${Math.random()}`
+      onChange([...rects, { ...draft, id }])
+      setSelected(id)
     }
     setDraft(null)
   }
@@ -63,15 +68,44 @@ export default function RectEditor({
         onPointerMove={move}
         onPointerUp={up}
         onPointerCancel={up}
-        className="relative cursor-crosshair touch-none select-none overflow-hidden rounded-xl ring-1 ring-ink/15"
+        className="relative cursor-crosshair touch-none select-none rounded-xl ring-1 ring-ink/15"
       >
-        <img src={src} alt={alt} draggable={false} className="block w-full" />
-        {rects.map((r, i) => (
-          <div key={r.id} className="pointer-events-none absolute" style={box(r)}>
-            {renderRect ? renderRect(r) : <div className="h-full w-full bg-black" />}
-            <span className="absolute -left-px -top-5 rounded bg-ink px-1 text-[11px] font-medium text-ground">{i + 1}</span>
-          </div>
-        ))}
+        <img src={src} alt={alt} draggable={false} className="block w-full rounded-xl" />
+        {rects.map((r, i) => {
+          const fill = renderRect ? renderRect(r) : <div className="h-full w-full bg-black" />
+          const tag = <span className="pointer-events-none absolute -left-px -top-5 rounded bg-ink px-1 text-[11px] font-medium text-ground">{i + 1}</span>
+          // The selected box gets edge and corner handles; the others are clicked to select them.
+          return r.id === selected ? (
+            <ResizableBox
+              key={r.id}
+              stageRef={stageRef}
+              rect={r}
+              label={`Area ${i + 1}`}
+              min={0.01}
+              onChange={(n) => onChange(rects.map((x) => (x.id === r.id ? { ...x, ...n } : x)))}
+            >
+              <div className="pointer-events-none h-full w-full">{fill}</div>
+              {tag}
+            </ResizableBox>
+          ) : (
+            <div
+              key={r.id}
+              role="button"
+              tabIndex={0}
+              aria-label={`Pilih area ${i + 1} untuk diubah`}
+              onPointerDown={(e) => {
+                e.stopPropagation()
+                setSelected(r.id)
+              }}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && setSelected(r.id)}
+              className="absolute cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+              style={box(r)}
+            >
+              <div className="pointer-events-none h-full w-full">{fill}</div>
+              {tag}
+            </div>
+          )
+        })}
         {draft && <div className="pointer-events-none absolute border-2 border-dashed border-accent-500 bg-accent-500/15" style={box(draft)} />}
       </div>
 
