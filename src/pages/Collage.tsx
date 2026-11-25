@@ -92,6 +92,20 @@ export default function Collage() {
   const [error, setError] = useState('')
   const [working, setWorking] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const itemsRef = useRef<Item[]>([])
+
+  useEffect(() => {
+    itemsRef.current = items
+  }, [items])
+
+  useEffect(() => {
+    return () => {
+      for (const it of itemsRef.current) {
+        URL.revokeObjectURL(it.url)
+        it.bitmap.close()
+      }
+    }
+  }, [])
 
   const cols = colsSetting === 'auto' ? Math.max(1, Math.ceil(Math.sqrt(items.length))) : colsSetting
 

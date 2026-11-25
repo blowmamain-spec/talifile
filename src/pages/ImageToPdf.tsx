@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { PDFDocument } from 'pdf-lib'
 import { deliver as saveAs } from '../lib/handoff'
 import ToolShell from '../components/ToolShell'
@@ -32,6 +32,17 @@ export default function ImageToPdf() {
   const [pageMode, setPageMode] = useState<PageMode>('fit')
   const [working, setWorking] = useState(false)
   const [error, setError] = useState('')
+  const itemsRef = useRef<ImgItem[]>([])
+
+  useEffect(() => {
+    itemsRef.current = items
+  }, [items])
+
+  useEffect(() => {
+    return () => {
+      for (const it of itemsRef.current) URL.revokeObjectURL(it.url)
+    }
+  }, [])
 
   function handleFiles(files: File[]) {
     const next = files.map((file) => ({
@@ -43,7 +54,11 @@ export default function ImageToPdf() {
   }
 
   function remove(id: string) {
-    setItems((prev) => prev.filter((it) => it.id !== id))
+    setItems((prev) => {
+      const target = prev.find((it) => it.id === id)
+      if (target) URL.revokeObjectURL(target.url)
+      return prev.filter((it) => it.id !== id)
+    })
   }
 
   function move(id: string, dir: -1 | 1) {

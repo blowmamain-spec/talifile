@@ -123,6 +123,14 @@ const paths: Record<string, React.ReactNode> = {
       <path strokeLinecap="round" d="M6.2 15c.8-2.2 2.2-3.3 3.8-3.3s3 1.1 3.8 3.3" />
     </>
   ),
+  'pasang-twibbon': (
+    <>
+      <rect x="2.5" y="2.5" width="15" height="15" rx="2.2" />
+      <rect x="5.5" y="5.5" width="9" height="9" rx="1.2" />
+      <circle cx="8.5" cy="8.7" r="1.1" />
+      <path strokeLinejoin="round" d="M5.7 13.5 8.2 11l1.8 1.8 1.5-1.6 2.8 2.8" />
+    </>
+  ),
   'resize-banyak': (
     <>
       <rect x="5.5" y="5.5" width="11" height="11" rx="1.6" />

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { CropFrame } from '../components/ResizableBox'
@@ -31,6 +31,18 @@ export default function CropResize() {
   const [result, setResult] = useState<{ blob: Blob; url: string; w: number; h: number } | null>(null)
   const [working, setWorking] = useState(false)
   const stageRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    return () => {
+      if (img?.src) URL.revokeObjectURL(img.src)
+    }
+  }, [img])
+
+  useEffect(() => {
+    return () => {
+      if (result?.url) URL.revokeObjectURL(result.url)
+    }
+  }, [result])
 
   function handleFiles(files: File[]) {
     const f = files[0]

@@ -9,7 +9,7 @@ import type { Tool } from '../tools'
 type Concept =
   | 'img' | 'pdf' | 'word' | 'text' | 'convert' | 'compress' | 'merge' | 'split' | 'organize' | 'rotate' | 'crop'
   | 'resize' | 'removebg' | 'sign' | 'date' | 'watermark' | 'pagenum' | 'lock' | 'ocr' | 'redact' | 'metadata' | 'qr'
-  | 'collage' | 'pasfoto' | 'form' | 'write' | 'info' | 'pagesize' | 'nup' | 'batch' | 'heic' | 'page' | 'jpg' | 'png'
+  | 'collage' | 'pasfoto' | 'twibbon' | 'form' | 'write' | 'info' | 'pagesize' | 'nup' | 'batch' | 'heic' | 'page' | 'jpg' | 'png'
   | 'webp' | 'read' | 'id' | 'print' | 'verb'
 
 // Phrases first (matched on the joined query), then single words. Order inside a list does not matter.
@@ -35,7 +35,7 @@ const vocab: Record<Concept, string[]> = {
   date: ['tanggal', 'date', 'stempel tanggal'],
   watermark: ['watermark', 'tanda air', 'wm', 'cap', 'verifikasi'],
   pagenum: ['nomor halaman', 'page number', 'page numbers', 'numbering', 'penomoran', 'nomor', 'number'],
-  lock: ['password', 'kunci', 'lock', 'protect', 'proteksi', 'enkripsi', 'encrypt', 'sandi', 'kata sandi', 'unlock', 'buka kunci', 'decrypt', 'pw', 'aman', 'secure'],
+  lock: ['password', 'kunci', 'lock', 'protect', 'proteksi', 'enkripsi', 'encrypt', 'sandi', 'kata sandi', 'unlock', 'buka kunci', 'buka password', 'hapus password', 'buka', 'lepas', 'decrypt', 'pw', 'aman', 'secure'],
   ocr: ['ocr', 'scan', 'scanned', 'hasil scan', 'pindai', 'kenali teks', 'recognize'],
   read: ['baca', 'read', 'ambil teks', 'salin teks', 'copy teks', 'copy text', 'extract text'],
   redact: ['sensor', 'blur', 'redact', 'redaksi', 'sembunyikan', 'hide', 'tutup', 'pixelate', 'samarkan', 'hitamkan', 'coret', 'privasi', 'privacy', 'wajah', 'muka', 'face', 'rahasia', 'confidential'],
@@ -43,6 +43,7 @@ const vocab: Record<Concept, string[]> = {
   qr: ['qr', 'qrcode', 'qr code', 'barcode', 'kode qr', 'wifi', 'scan qr'],
   collage: ['kolase', 'collage', 'grid', 'gabung foto', 'susun foto'],
   pasfoto: ['pas foto', 'pasfoto', 'passport', 'paspor', 'foto formal', 'foto ktp', '3x4', '4x6', '2x3', 'cpns', 'ijazah', 'lamaran', 'background merah', 'background biru'],
+  twibbon: ['twibbon', 'twibon', 'twibbonize', 'frame', 'bingkai', 'bingkai foto', 'frame foto', 'pasang twibbon', 'pasang frame', 'overlay', 'kampanye', 'panitia'],
   id: ['ktp', 'kk', 'sim', 'npwp', 'identitas', 'nik'],
   form: ['form', 'formulir', 'isian', 'fill', 'isi form', 'acroform', 'kolom isian', 'isi'],
   write: ['tulis', 'menulis', 'ketik', 'tambah teks', 'add text', 'edit pdf', 'edit teks', 'catatan', 'annotate', 'anotasi'],
@@ -61,6 +62,7 @@ const toolConcepts: Record<string, Partial<Record<Concept, number>>> = {
   konversi: { convert: 3, img: 1, jpg: 2, png: 2, webp: 2, heic: 3, pdf: 1, word: 3, text: 2, read: 1 },
   'remove-background': { removebg: 3, img: 2, png: 1 },
   'pas-foto': { pasfoto: 3, removebg: 1, img: 1, print: 1, id: 1 },
+  'pasang-twibbon': { twibbon: 3, img: 2, collage: 1 },
   compress: { compress: 3, img: 1, pdf: 1, jpg: 1, batch: 1 },
   'crop-resize': { crop: 3, resize: 3, img: 2 },
   'resize-banyak': { resize: 3, batch: 3, img: 2 },

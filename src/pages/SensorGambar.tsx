@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import RectEditor from '../components/RectEditor'
@@ -32,6 +32,12 @@ export default function SensorGambar() {
   const [mode, setMode] = useState<Mode>('hitam')
   const [error, setError] = useState('')
   const [working, setWorking] = useState(false)
+
+  useEffect(() => {
+    return () => {
+      if (url) URL.revokeObjectURL(url)
+    }
+  }, [url])
 
   function handleFiles(files: File[]) {
     const f = files[0]

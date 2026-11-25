@@ -26,6 +26,12 @@ export const toolSeo: Record<string, PageSeo> = {
     intro: 'Untuk syarat CPNS, lamaran kerja, ijazah, atau dokumen resmi. Latar asli dihapus otomatis lalu diganti warna pilihanmu.',
     steps: ['Upload foto wajah menghadap depan.', 'Pilih ukuran dan warna latar, geser dan perbesar sampai pas.', 'Download satu pas foto atau satu lembar 4R siap cetak.'],
   },
+  'pasang-twibbon': {
+    title: 'Pasang Twibbon Online Gratis, Bisa Lebih dari Satu Foto',
+    description: `Pasang satu atau beberapa foto ke dalam frame twibbon PNG, atur posisi, ukuran, rotasi, dan urutan layer langsung di browser. ${free}`,
+    intro: 'Masukkan frame twibbon dan satu atau beberapa foto sekaligus. Frame otomatis jadi semi-transparan saat kamu mengatur foto supaya posisi lebih mudah dipaskan.',
+    steps: ['Upload frame twibbon PNG transparan dan satu atau beberapa foto.', 'Geser, perbesar, atau putar tiap foto hingga pas dengan lubang frame.', 'Pilih format PNG atau JPG, lalu download hasilnya dalam resolusi asli twibbon.'],
+  },
   compress: {
     title: 'Kompres Foto dan PDF Online, Bisa sampai di Bawah 200 KB',
     description: `Perkecil ukuran gambar dan PDF untuk syarat upload, misalnya maksimal 200 KB atau 1 MB. Banyak file sekaligus. ${free}`,

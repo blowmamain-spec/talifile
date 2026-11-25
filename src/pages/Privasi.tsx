@@ -1,8 +1,36 @@
+import { useEffect, useState } from 'react'
+import { Button, Panel } from '../components/ui'
+import { clearModelCache, getModelCacheSize } from '../lib/bgRemoval'
+import { formatBytes } from '../lib/format'
+
 export default function Privasi() {
+  const [cacheBytes, setCacheBytes] = useState<number | null>(null)
+  const [clearing, setClearing] = useState(false)
+
+  useEffect(() => {
+    const alive = { current: true }
+    getModelCacheSize().then((b) => {
+      if (alive.current) setCacheBytes(b)
+    })
+    return () => {
+      alive.current = false
+    }
+  }, [])
+
+  async function handleClear() {
+    setClearing(true)
+    try {
+      await clearModelCache()
+      setCacheBytes(0)
+    } finally {
+      setClearing(false)
+    }
+  }
+
   return (
     <article className="max-w-2xl pt-4 sm:pt-8">
       <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">Privasi</h1>
-      <p className="mt-3 text-muted">Terakhir diperbarui 10 November 2026.</p>
+      <p className="mt-3 text-muted">Terakhir diperbarui 25 November 2026.</p>
 
       <div className="mt-8 space-y-5 leading-relaxed">
         <h2 className="text-xl font-semibold tracking-tight">File kamu</h2>
@@ -37,9 +65,26 @@ export default function Privasi() {
           Pilihan tema dan daftar "Terakhir dipakai" disimpan di penyimpanan lokal browser. Data ini tidak keluar dari
           perangkatmu dan bisa dihapus lewat pengaturan browser. Agar bisa dipakai offline, kode aplikasi juga disimpan di
           cache browser. Model AI untuk hapus background disimpan di cache browser setelah pertama diunduh, supaya
-          pemakaian berikutnya tidak perlu mengunduh ulang. Model ini berukuran puluhan MB dan bisa dihapus lewat
-          pengaturan "Hapus data situs".
+          pemakaian berikutnya tidak perlu mengunduh ulang.
         </p>
+
+        <Panel className="flex flex-wrap items-center justify-between gap-4">
+          <div className="text-sm">
+            <p className="font-medium">Cache model AI di browser ini</p>
+            <p className="mt-0.5 tabular-nums text-muted">
+              {cacheBytes === null
+                ? 'Menghitung ukuran…'
+                : cacheBytes > 0
+                  ? `${formatBytes(cacheBytes)} tersimpan di perangkat (untuk Remove Background & Pas Foto).`
+                  : 'Belum ada model AI yang tersimpan di perangkat ini.'}
+            </p>
+          </div>
+          {cacheBytes !== null && cacheBytes > 0 && (
+            <Button variant="danger" disabled={clearing} onClick={handleClear} className="!min-h-9 !px-4 !text-xs">
+              {clearing ? 'Menghapus…' : 'Hapus cache model'}
+            </Button>
+          )}
+        </Panel>
       </div>
     </article>
   )

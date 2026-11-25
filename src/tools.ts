@@ -22,6 +22,7 @@ export const tools: Tool[] = [
   // Gambar
   { id: 'remove-background', path: '/remove-background', title: 'Remove Background', description: 'Hapus background gambar otomatis, hasil PNG transparan.', category: 'gambar', keywords: 'hapus latar transparan png foto produk', accepts: IMG },
   { id: 'pas-foto', path: '/pas-foto', title: 'Pas Foto', description: 'Ukuran 2x3, 3x4, 4x6 dengan latar merah, biru, atau putih.', category: 'gambar', keywords: 'pasfoto ktp cpns ijazah lamaran background merah biru cetak', accepts: IMG },
+  { id: 'pasang-twibbon', path: '/pasang-twibbon', title: 'Pasang Twibbon', description: 'Pasang satu atau beberapa foto ke dalam frame twibbon.', category: 'gambar', keywords: 'twibbon twibon frame bingkai foto event kampanye panitia overlay', accepts: IMG },
   { id: 'compress', path: '/compress', title: 'Compress File', description: 'Perkecil gambar atau PDF, bisa sampai target ukuran.', category: 'gambar', keywords: 'kompres kecilin perkecil ukuran kb mb upload', accepts: `${IMG},${PDF}` },
   { id: 'crop-resize', path: '/crop-resize', title: 'Crop & Resize', description: 'Potong dan ubah ukuran gambar langsung di browser.', category: 'gambar', keywords: 'potong ubah ukuran dimensi pixel', accepts: IMG },
   { id: 'resize-banyak', path: '/resize-banyak', title: 'Resize Banyak Gambar', description: 'Ubah ukuran banyak gambar sekaligus, hasil satu .zip.', category: 'gambar', keywords: 'batch massal sekaligus resize zip', accepts: IMG },

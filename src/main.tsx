@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { inject } from '@vercel/analytics'
 import './index.css'
 import Layout from './Layout'
+import ErrorBoundary from './components/ErrorBoundary'
 
 // Cookieless page-view counts only (see /privasi). The script is served from this same origin by Vercel.
 if (import.meta.env.PROD) inject()
@@ -14,6 +15,7 @@ if ('caches' in window) caches.delete('bg-removal-model').catch(() => {})
 const pages = {
   'remove-background': lazy(() => import('./pages/RemoveBackground')),
   'pas-foto': lazy(() => import('./pages/PasFoto')),
+  'pasang-twibbon': lazy(() => import('./pages/PasangTwibbon')),
   compress: lazy(() => import('./pages/Compress')),
   'crop-resize': lazy(() => import('./pages/CropResize')),
   'resize-banyak': lazy(() => import('./pages/ResizeBanyak')),
@@ -59,20 +61,29 @@ function RouteFallback() {
   )
 }
 
+// Clear the stale-chunk auto-reload guard once the app boots cleanly.
+try {
+  sessionStorage.removeItem('talifile:chunk-reload')
+} catch {
+  // ignore
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
-      <Suspense fallback={<RouteFallback />}>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<Home />} />
-            {Object.entries(pages).map(([path, Page]) => (
-              <Route key={path} path={path} element={<Page />} />
-            ))}
-            <Route path="*" element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<Home />} />
+              {Object.entries(pages).map(([path, Page]) => (
+                <Route key={path} path={path} element={<Page />} />
+              ))}
+              <Route path="*" element={<NotFound />} />
+            </Route>
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 )

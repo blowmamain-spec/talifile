@@ -2,6 +2,8 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useEffect } from 'react'
 import ThemeToggle from './components/ThemeToggle'
 import Rope from './components/Rope'
+import AmbientBackdrop from './components/AmbientBackdrop'
+import QuickSwitcher from './components/QuickSwitcher'
 import { tools } from './tools'
 import { pageSeo, toolSeo } from './seo'
 
@@ -25,7 +27,8 @@ export default function Layout() {
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="relative isolate flex min-h-screen flex-col">
+      <AmbientBackdrop />
       <a
         href="#konten"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-surface focus:px-4 focus:py-2 focus:ring-2 focus:ring-brand-500"
@@ -39,7 +42,8 @@ export default function Layout() {
         >
           Tali<span className="text-accent-600">File</span>
         </Link>
-        <nav aria-label="Navigasi utama" className="flex items-center gap-0.5">
+        <nav aria-label="Navigasi utama" className="flex items-center gap-1">
+          <QuickSwitcher />
           <NavLink to="/" end className={navClass}>
             Semua tools
           </NavLink>

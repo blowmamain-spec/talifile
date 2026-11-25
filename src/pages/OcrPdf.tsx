@@ -4,6 +4,7 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { loadPdfDocument, renderPageToCanvas } from '../lib/pdfjs'
 import { friendlyPdfError } from '../lib/pdfErrors'
+import { deliver } from '../lib/handoff'
 
 type Lang = 'ind+eng' | 'eng' | 'ind'
 
@@ -97,12 +98,7 @@ export default function OcrPdf() {
 
   function downloadText() {
     const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${file?.name.replace(/\.pdf$/i, '') ?? 'ocr'}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
+    deliver(blob, `${file?.name.replace(/\.pdf$/i, '') ?? 'ocr'}.txt`)
   }
 
   return (

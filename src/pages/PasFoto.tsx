@@ -4,7 +4,7 @@ import ToolShell from '../components/ToolShell'
 import Dropzone from '../components/Dropzone'
 import { Button, Chips, ErrorText, FileBar, Panel, Slider, baseName, canvasToBlob } from '../components/ui'
 import { deliver } from '../lib/handoff'
-import { removeBackgroundSafe } from '../lib/bgRemoval'
+import { DEFAULT_BG_MODEL, isModelCached, removeBackgroundSafe, warmupBackgroundModel } from '../lib/bgRemoval'
 
 type Size = '2x3' | '3x4' | '4x6'
 type Bg = 'merah' | 'biru' | 'putih'
@@ -26,6 +26,7 @@ export default function PasFoto() {
   const [progress, setProgress] = useState('')
   const [error, setError] = useState('')
   const [removeBg, setRemoveBg] = useState(true)
+  const [modelCached, setModelCached] = useState(false)
   const [size, setSize] = useState<Size>('3x4')
   const [bg, setBg] = useState<Bg>('merah')
   const [zoom, setZoom] = useState(1)
@@ -33,14 +34,28 @@ export default function PasFoto() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const dragRef = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null)
 
+  useEffect(() => {
+    if (!removeBg) return
+    const alive = { current: true }
+    isModelCached(DEFAULT_BG_MODEL).then((ok) => {
+      if (!alive.current) return
+      setModelCached(ok)
+      if (ok) void warmupBackgroundModel(DEFAULT_BG_MODEL, { onlyIfCached: true })
+    })
+    return () => {
+      alive.current = false
+    }
+  }, [removeBg])
+
   async function prepare(f: File, strip: boolean) {
     setStatus('working')
     setError('')
     setCutout(null)
     try {
       if (strip) {
-        setProgress('Menyiapkan penghapus latar…')
-        const blob = await removeBackgroundSafe(f, 'isnet_fp16', setProgress)
+        setProgress(modelCached ? 'Memuat model dari perangkat…' : 'Menyiapkan penghapus latar…')
+        const blob = await removeBackgroundSafe(f, DEFAULT_BG_MODEL, setProgress)
+        setModelCached(true)
         setCutout(await createImageBitmap(blob))
       } else {
         setCutout(await createImageBitmap(f))
@@ -154,7 +169,10 @@ export default function PasFoto() {
 
           {status === 'working' && (
             <p className="mt-6 text-sm text-muted" role="status">
-              {progress} Pertama kali dipakai, model AI diunduh dulu (sekali saja).
+              {progress}{' '}
+              {modelCached
+                ? 'Model sudah tersimpan di perangkat.'
+                : 'Pertama kali dipakai, model AI diunduh dulu lalu tersimpan otomatis di browser.'}
             </p>
           )}
           <ErrorText>{error}</ErrorText>

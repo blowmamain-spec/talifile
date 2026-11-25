@@ -144,6 +144,12 @@ function BacaQr() {
   const [error, setError] = useState('')
   const [copied, setCopied] = useState(false)
 
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
+
   async function handleFiles(files: File[]) {
     const f = files[0]
     if (!f) return

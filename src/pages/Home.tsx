@@ -1,13 +1,16 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { categoryLabels, toolById, tools } from '../tools'
 import type { Category, Tool } from '../tools'
 import ToolIcon from '../components/ToolIcon'
 import Rope from '../components/Rope'
+import FeaturedTools from '../components/FeaturedTools'
 import { readRecent } from '../lib/recent'
 import { searchTools } from '../lib/search'
 
 type Filter = 'semua' | Category
+
+const FILTERS: Filter[] = ['semua', 'gambar', 'pdf', 'lainnya']
 
 // Category tint lives on the icon only: green for images, pink for PDF, so the grid reads in two calm colors, never as a rainbow.
 function iconTint(tool: Tool) {
@@ -21,6 +24,9 @@ export default function Home() {
   const [filter, setFilter] = useState<Filter>('semua')
   const [recent] = useState(() => readRecent().map(toolById).filter((t): t is Tool => !!t))
   const searchRef = useRef<HTMLInputElement>(null)
+  const pillRef = useRef<HTMLSpanElement>(null)
+  const pillReadyRef = useRef(false)
+  const tabRefs = useRef<Partial<Record<Filter, HTMLButtonElement | null>>>({})
   const navigate = useNavigate()
 
   // "/" jumps to search, the habit from most search-first sites.
@@ -37,7 +43,9 @@ export default function Home() {
   }, [])
 
   // With a query: ranked by meaning (see lib/search). Without: the full list in its curated order.
-  const search = useMemo(() => (query.trim() ? searchTools(tools, query) : null), [query])
+  const trimmedQuery = query.trim()
+  const isSearching = trimmedQuery.length > 0
+  const search = useMemo(() => (trimmedQuery ? searchTools(tools, trimmedQuery) : null), [trimmedQuery])
   const pool = search ? search.hits.map((h) => h.tool) : tools
   const visible = pool.filter((t) => filter === 'semua' || t.category === filter)
 
@@ -48,7 +56,29 @@ export default function Home() {
     lainnya: pool.filter((t) => t.category === 'lainnya').length,
   }
 
-  const examples = ['pdf ke word', 'kecilin foto 200kb', 'ttd pdf', 'hapus background', 'gabung pdf', 'sensor ktp']
+  // Smoothly glides the active tab pill to match whichever category tab is selected.
+  useLayoutEffect(() => {
+    const syncPill = (instant: boolean) => {
+      const btn = tabRefs.current[filter]
+      const pill = pillRef.current
+      if (!btn || !pill) return
+      if (instant) pill.style.transition = 'none'
+      pill.style.transform = `translate3d(${btn.offsetLeft}px, 0, 0)`
+      pill.style.width = `${btn.offsetWidth}px`
+      pill.style.opacity = '1'
+      if (instant) {
+        void pill.offsetWidth
+        pill.style.transition = ''
+      }
+    }
+    syncPill(!pillReadyRef.current)
+    pillReadyRef.current = true
+    const onResize = () => syncPill(true)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [filter, counts.semua, counts.gambar, counts.pdf, counts.lainnya])
+
+  const examples = ['pasang twibbon', 'pdf ke word', 'kecilin foto 200kb', 'ttd pdf', 'hapus background', 'sensor ktp']
 
   return (
     <div>
@@ -76,7 +106,9 @@ export default function Home() {
               fill="none"
               stroke="currentColor"
               strokeWidth="1.6"
-              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted"
+              className={`pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 transition-colors duration-200 ${
+                isSearching ? 'text-brand-600' : 'text-muted'
+              }`}
             >
               <circle cx="9" cy="9" r="5.5" />
               <path strokeLinecap="round" d="m13.5 13.5 3.5 3.5" />
@@ -84,7 +116,8 @@ export default function Home() {
             <input
               ref={searchRef}
               id="cari-tool"
-              type="search"
+              type="text"
+              inputMode="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={(e) => {
@@ -92,15 +125,31 @@ export default function Home() {
                 if (e.key === 'Escape') setQuery('')
               }}
               aria-describedby="bantuan-cari"
-              placeholder="Cari: kompres, ttd, pas foto"
+              placeholder="Cari: twibbon, kompres, ttd, pas foto"
               autoComplete="off"
-              className="h-13 w-full rounded-2xl bg-surface pl-12 pr-12 text-base outline-none ring-1 ring-ink/15 transition-shadow placeholder:text-muted focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="h-13 w-full rounded-2xl bg-surface pl-12 pr-12 text-base outline-none ring-1 ring-ink/15 transition-[box-shadow,background-color] duration-200 placeholder:text-muted focus-visible:ring-2 focus-visible:ring-brand-500"
             />
-            <kbd className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-md px-2 py-0.5 text-xs text-muted ring-1 ring-ink/15 sm:block">
-              /
-            </kbd>
+            {query ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('')
+                  searchRef.current?.focus()
+                }}
+                aria-label="Hapus pencarian"
+                className="c-pop absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full text-muted transition-colors hover:bg-ink/8 hover:text-ink focus-visible:outline-2 focus-visible:outline-brand-500"
+              >
+                <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-3.5 w-3.5">
+                  <path strokeLinecap="round" d="M4 4l8 8m0-8-8 8" />
+                </svg>
+              </button>
+            ) : (
+              <kbd className="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-md px-2 py-0.5 text-xs text-muted ring-1 ring-ink/15 sm:block">
+                /
+              </kbd>
+            )}
           </div>
-          <p id="bantuan-cari" className="mt-2 min-h-5 text-sm text-muted" aria-live="polite">
+          <p id="bantuan-cari" className="mt-2 min-h-5 text-sm text-muted transition-opacity duration-200" aria-live="polite">
             {search && visible.length > 0 ? (
               <>
                 {search.partial ? 'Tidak ada yang cocok dengan semua kata, ini yang paling dekat. ' : `${visible.length} tool cocok. `}
@@ -115,47 +164,78 @@ export default function Home() {
         </div>
       </section>
 
-      {recent.length > 0 && !query && (
-        <section aria-labelledby="judul-terakhir" className="mb-6 sm:mb-8">
-          <h2 id="judul-terakhir" className="mb-3 text-sm font-semibold text-muted">
-            Terakhir dipakai
-          </h2>
-          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-            {recent.map((t) => (
-              <Link
-                key={t.id}
-                to={t.path}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface pl-2 pr-4 text-sm font-medium ring-1 ring-ink/10 transition-colors hover:ring-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
-              >
-                <span className={`flex h-7 w-7 items-center justify-center rounded-full ${iconTint(t)}`}>
-                  <ToolIcon id={t.id} className="h-4 w-4" />
-                </span>
-                {t.title}
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Smoothly collapses Recent & Featured Tools only while searching; stays visible when switching category tabs. */}
+      <div className="collapse-panel" data-collapsed={isSearching} aria-hidden={isSearching} inert={isSearching}>
+        <div>
+          {recent.length > 0 && (
+            <section aria-labelledby="judul-terakhir" className="mb-6 sm:mb-8">
+              <h2 id="judul-terakhir" className="mb-3 text-sm font-semibold text-muted">
+                Terakhir dipakai
+              </h2>
+              <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+                {recent.map((t) => (
+                  <Link
+                    key={t.id}
+                    to={t.path}
+                    className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full bg-surface pl-2 pr-4 text-sm font-medium ring-1 ring-ink/10 transition-colors hover:ring-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                  >
+                    <span className={`flex h-7 w-7 items-center justify-center rounded-full ${iconTint(t)}`}>
+                      <ToolIcon id={t.id} className="h-4 w-4" />
+                    </span>
+                    {t.title}
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
-      <div role="group" aria-label="Filter kategori" className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
-        {(['semua', 'gambar', 'pdf', 'lainnya'] as Filter[]).map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => setFilter(f)}
-            aria-pressed={filter === f}
-            className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-4 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
-              filter === f ? 'bg-ink text-ground' : 'bg-surface text-ink/75 ring-1 ring-ink/10 hover:text-ink'
-            }`}
-          >
-            {f === 'semua' ? 'Semua' : categoryLabels[f]}
-            <span className={`tabular-nums ${filter === f ? 'opacity-70' : 'text-muted'}`}>{counts[f]}</span>
-          </button>
-        ))}
+          <FeaturedTools externalPaused={isSearching} />
+        </div>
+      </div>
+
+      <h2 className="mb-3 text-sm font-semibold text-muted">
+        {isSearching ? 'Hasil pencarian' : 'Semua tools'}
+      </h2>
+
+      {/* Category tabs with a GPU-gliding active pill indicator */}
+      <div className="-mx-4 mb-5 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:overflow-visible sm:px-0">
+        <div
+          role="group"
+          aria-label="Filter kategori"
+          className="relative inline-flex items-center gap-1 rounded-full bg-surface p-1 ring-1 ring-ink/10"
+        >
+          <span
+            ref={pillRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-1 bottom-1 rounded-full bg-ink opacity-0 transition-[transform,width] duration-250 ease-[cubic-bezier(0.22,1,0.36,1)]"
+          />
+          {FILTERS.map((f) => {
+            const active = filter === f
+            return (
+              <button
+                key={f}
+                ref={(el) => {
+                  tabRefs.current[f] = el
+                }}
+                type="button"
+                onClick={() => setFilter(f)}
+                aria-pressed={active}
+                className={`relative z-10 inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3.5 text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ${
+                  active ? 'text-ground' : 'text-ink/75 hover:text-ink'
+                }`}
+              >
+                <span>{f === 'semua' ? 'Semua' : categoryLabels[f]}</span>
+                <span className={`tabular-nums transition-opacity duration-200 ${active ? 'opacity-70' : 'text-muted'}`}>
+                  {counts[f]}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       {visible.length === 0 ? (
-        <div className="rounded-2xl bg-surface px-6 py-12 text-center ring-1 ring-ink/10">
+        <div key="empty" className="c-rise rounded-2xl bg-surface px-6 py-12 text-center ring-1 ring-ink/10">
           <p className="font-medium">
             {pool.length > 0 ? `Tidak ada di kategori ini untuk "${query}".` : `Belum ada tool untuk "${query}".`}
           </p>
@@ -170,7 +250,7 @@ export default function Home() {
                   setFilter('semua')
                   searchRef.current?.focus()
                 }}
-                className="inline-flex min-h-11 items-center rounded-full bg-ground px-4 text-sm ring-1 ring-ink/15 hover:ring-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
+                className="inline-flex min-h-11 items-center rounded-full bg-ground px-4 text-sm ring-1 ring-ink/15 transition-colors hover:ring-brand-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500"
               >
                 {ex}
               </button>
@@ -188,12 +268,16 @@ export default function Home() {
           </button>
         </div>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+        <ul key={`${filter}-${isSearching ? 'search' : 'browse'}`} className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {visible.map((tool, i) => (
-            <li key={tool.id}>
+            <li
+              key={tool.id}
+              className="c-card"
+              style={{ animationDelay: `${Math.min(i, 8) * 18}ms` }}
+            >
               <Link
                 to={tool.path}
-                className={`group flex h-full flex-col gap-3 rounded-2xl bg-surface p-4 transition-[box-shadow,transform] hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:p-5 ${
+                className={`group flex h-full flex-col gap-3 rounded-2xl bg-surface p-4 transition-[box-shadow,transform] duration-200 hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 sm:p-5 ${
                   search && i === 0 ? 'ring-2 ring-brand-500' : 'ring-1 ring-ink/8 hover:ring-ink/20'
                 }`}
               >
